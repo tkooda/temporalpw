@@ -11,6 +11,10 @@ handlers:
   script: main.bottle
   secure: always
 
+- url: /cleanup
+  script: main.bottle
+  login: admin
+
 #- url: /static
 #  static_dir: static
 

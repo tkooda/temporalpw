@@ -1,0 +1,4 @@
+cron:
+- description: hourly purge of any expired password entries
+  url: /cleanup
+  schedule: every 1 hours

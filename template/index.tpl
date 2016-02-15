@@ -1,11 +1,21 @@
 <html>
 <body>
+
+<script language="javascript">
+function validateForm() {
+  var x = document.forms["password"]["secret"].value;
+  if ( x == null || x == "" ) {
+    return false;
+  }
+}
+</script>
+
 <center>
 <br/>
 <br/>
 <br/>
 <br/>
-<form action="/new" method="POST">
+<form name="password" action="/new" method="post" onsubmit="return validateForm()">
 Enter a password: <input type="text" name="secret"><br/><br/>
 Expire in <select name="days">
   <option value="1">1</option>

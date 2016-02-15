@@ -60,7 +60,7 @@ def new():
     
     password = Password( id = encoded_key[ : len( encoded_key ) / 2 ], # only store first half of the key!
                          ciphertext = ciphertext,
-                         remaining_views = views,
+                         remaining_views = views + 1,
                          expire_date = expire )
     password.put()
     
@@ -100,3 +100,9 @@ def error_404( error ):
     """Return a custom 404 error."""
     return template( "template/404" )
 
+
+@bottle.get( "/cleanup" )
+def cleanup():
+    keys = Password.query( ndb.OR( Password.remaining_views < 1,
+                                   Password.expire_date < datetime.datetime.now() ) ).fetch( keys_only = True )
+    ndb.delete_multi( keys )
