@@ -7,13 +7,13 @@ api_version: 1
 threadsafe: yes
 
 handlers:
-- url: .*
-  script: main.bottle
-  secure: always
-
 - url: /cleanup
   script: main.bottle
   login: admin
+
+- url: .*
+  script: main.bottle
+  secure: always
 
 #- url: /static
 #  static_dir: static
