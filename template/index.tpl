@@ -1,8 +1,12 @@
 <html>
 <body>
 <center>
+<br/>
+<br/>
+<br/>
+<br/>
 <form action="/new" method="POST">
-Enter password: <input type="text" name="secret"><br/>
+Enter a password: <input type="text" name="secret"><br/><br/>
 Expire in <select name="days">
   <option value="1">1</option>
   <option value="2">2</option>
@@ -34,8 +38,8 @@ Expire in <select name="days">
   <option value="28">28</option>
   <option value="29">29</option>
   <option value="30">30</option>
-</select> days.<br/>
-Allow <select name="views">
+</select> days.<br/><br/>
+Only allow it to be viewed up to <select name="views">
   <option value="1">1</option>
   <option value="2">2</option>
   <option value="3" selected>3</option>
@@ -46,10 +50,11 @@ Allow <select name="views">
   <option value="8">8</option>
   <option value="9">9</option>
   <option value="10">10</option>
-</select> views.<br/>
-<input type="submit" value="Get temporary URL">
+</select> times.<br/><br/>
+<input type="submit" value="Get temporary URL for this password">
 </form>
 <br/>
+(do not include any information that identifies how / where the password can be used)<br/>
 <br/>
 <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
 </center>
