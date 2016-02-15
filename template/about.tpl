@@ -1,9 +1,15 @@
-About this project:
-
- - passwords are stored encrypted with AES and cannot be decrypted without the unique URLs even if the database is compromised
- - easy to audit: only ~100 lines of (python) code
- - only uses <a href="http://bottlepy.org/">Bottle</a> framework, <a href="https://www.dlitz.net/software/pycrypto/">PyCrypto</a>, and <a href="https://pypi.python.org/pypi/base58">Base58</a> libraries
- - <a href="http://github.com/tkooda">100% open source</a>
- - 100% hosted on Google App Engine
- - please <a href="bitcoin:1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp">donate</a> a few pennies to help keep this service free forever
-
+<html>
+<head><title>About Temporal.PW</title></head>
+<body>
+<h1>About this project:</h1>
+<br/>
+<ul>
+  <li>passwords are stored encrypted with AES and cannot be decrypted without the unique URLs even if the database is compromised</li>
+  <li>easy to audit: only ~100 lines of (python) code</li>
+  <li>only uses <a href="http://bottlepy.org/">Bottle</a> framework, <a href="https://www.dlitz.net/software/pycrypto/">PyCrypto</a>, and <a href="https://pypi.python.org/pypi/base58">Base58</a> libraries</li>
+  <li><a href="http://github.com/tkooda">100% open source</a></li>
+  <li>100% hosted on Google App Engine</li>
+  <li>please <a href="bitcoin:1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp">donate</a> a few pennies to help keep this service free forever</li>
+</ul>
+</body>
+</html>

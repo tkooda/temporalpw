@@ -1,5 +1,6 @@
 <html>
 <body>
+<center>
 <form action="/new" method="POST">
 Enter password: <input type="text" name="secret"><br/>
 Expire in <select name="days">
@@ -48,5 +49,9 @@ Allow <select name="views">
 </select> views.<br/>
 <input type="submit" value="Get temporary URL">
 </form>
+<br/>
+<br/>
+<a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
+</center>
 </body>
 </html>

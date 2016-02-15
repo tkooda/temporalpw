@@ -74,7 +74,7 @@ def p( token ):
             raise ValueError( "invalid token length" )
         decoded = b58decode( token )
     except:
-        abort( 400, template( "template/invalid" ) )
+        return template( "template/invalid" )
     
     password = Password.get_by_id( token[ : len( token ) / 2 ] )
     if not password:
