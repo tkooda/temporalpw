@@ -1,6 +1,6 @@
 <html>
 <body>
-<form action="/new">
+<form action="/new" method="POST">
 Enter password: <input type="text" name="secret"><br/>
 Expire in <select name="days">
   <option value="1">1</option>
