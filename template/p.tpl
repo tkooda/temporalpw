@@ -54,7 +54,7 @@ $(document).ready(function(){
 <br/>
 <input type="text" id="url" class="input-lg col-lg-5 col-centered text-center" value="https://temporal.pw/p/{{token}}" readonly>
 <span class="input-group-btn">
-  <button id="btnURL" class="btn btn-primary mytooltip">Copy temporary URL to clipboard</button>
+  <button id="btnURL" class="btn btn-primary mytooltip" data-placement="right">Copy temporary URL to clipboard</button>
 </span>
 
 <br/>
@@ -65,7 +65,7 @@ $(document).ready(function(){
 <h1><span id="password" style="font-family: monospace">{{cleartext}}</span></h1>
 <hr>
 <span class="input-group-btn">
-  <button id="btnPass" class="btn btn-primary mytooltip">Copy Password to clipboard</button>
+  <button id="btnPass" class="btn btn-primary mytooltip" data-placement="right">Copy Password to clipboard</button>
 </span>
 
 <br/>
