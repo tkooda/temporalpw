@@ -16,24 +16,43 @@
 
 <script>
 $(document).ready(function(){
-  ZeroClipboard.config( { swfPath: "./ZeroClipboard.swf" } );
+
+  ZeroClipboard.config( { swfPath: "/static/ZeroClipboard.swf" } );
+
   var client = new ZeroClipboard($("#btnCopy"));
   client.on("copy", function (event) {
-      var copiedValue = $('#txtTestInput').val();
+      var copiedValue = $('#url').val();
       var clipboard = event.clipboardData;
       clipboard.setData("text/plain", copiedValue);
-      alert( 'Copied ' + copiedValue + ' to the clipboard');
   });
-})
+
+  var $bridge = $("#global-zeroclipboard-html-bridge");
+
+  client.on("ready", function(e) {
+    $bridge.data("placement", "right");
+    $bridge.tooltip("disable");
+  });
+
+  client.on("aftercopy", function(e) {
+    $bridge.data("placement", "right").tooltip("enable");
+    $bridge.data("placement", "right").attr("title", "Copied!").tooltip("fixTitle").tooltip("show").tooltip("enable"); // yes
+  });
+
+  $('#btnCopy').mouseleave(function(){
+    $bridge.tooltip("disable");
+  });
+
+});
 </script>
 
 <center>
 <div class="container text-center center-block" align="center">
 <br/>
-<input type="text" class="input-lg col-lg-5 col-centered text-center" value="https://temporal.pw/p/{{token}}" readonly>
+<input type="text" id="url" class="input-lg col-lg-5 col-centered text-center" value="https://temporal.pw/p/{{token}}" readonly>
 <span class="input-group-btn">
-  <button id="btnCopy" class="btn btn-primary">Copy to clipboard</button>
-  </span>
+  <button id="btnCopy" class="btn btn-primary">Copy URL to clipboard</button>
+</span>
+
 <br/>
 
 <h2>Your password is:</h2>
