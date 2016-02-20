@@ -75,30 +75,42 @@ def new():
     redirect( "/p/" + encoded_key )
 
 
-@bottle.get( "/p/<token>" )
-def p( token ):
+@bottle.get( "/<action>/<token>" ) # /p/ or /d/
+def action( action, token ):
+    if action != "p" and action != "d":
+        return abort( 404 )
+    
     try:
         if len( token ) < 10 or len( token ) > 30: # tokens likely between 16 and 21 bytes
             raise ValueError( "invalid token length" )
         decoded = b58decode( token )
     except:
-        return template( "template/invalid" )
+        return template( "template/generic", { "title": "This URL is invalid",
+                                               "message": "This URL is invalid, please re-check the URL." } )
     
     password = Password.get_by_id( token[ : len( token ) / 2 ] )
     if not password:
-        return template( "template/expired" )
+        return template( "template/generic", { "title": "This password has expired",
+                                               "message": "This password has expired." } )
     
     if password.remaining_views < 1 or password.expire_date < datetime.datetime.now():
         password.key.delete() # delete expired immediatley, don't wait for cron
-        return template( "template/expired" )
+        return template( "template/generic", { "title": "This password has expired",
+                                               "message": "This password has expired." } )
     
     if password.ip_hash:
         ip_salt, ip_hash = password.ip_hash.split( ":", 1 )
         if not ip_hash == SHA.new( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest():
-            return template( "template/denied" )
+            return template( "template/generic", { "title": "Access denied",
+                                                   "message": "This password is not accessible from your IP." } )
         ip_str = "only from " + os.environ[ "REMOTE_ADDR" ]
     else:
         ip_str = "from any IP"
+    
+    if action == "d": # user requested deletion
+        password.key.delete()
+        return template( "template/generic", { "title": "Password deleted",
+                                               "message": "Password deleted" } )
     
     password.remaining_views -= 1
     password.put()
@@ -106,7 +118,8 @@ def p( token ):
     try:
         cleartext = AES.new( decoded, AES.MODE_CFB, IV ).decrypt( password.ciphertext )
     except:
-        return template( "template/invalid" )
+        return template( "template/generic", { "title": "This URL is invalid",
+                                               "message": "This URL is invalid, please re-check the URL." } )
     
     days = password.expire_date - datetime.datetime.now()
     return template( "template/p", { "token": token,

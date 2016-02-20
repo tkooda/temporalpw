@@ -1,6 +1,6 @@
 <html>
 <head>
- <title>Temporal.PW - Access denied</title>
+ <title>Temporal.PW - {{title}}</title>
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <link rel="stylesheet" href="/static/bootstrap.min.css">
 </head>
@@ -18,7 +18,7 @@
 <br/>
 <br/>
 
-<h1>This password is not accessible from your IP.</h1>
+<h1>{{message}}</h1>
 
 <br/>
 <br/>

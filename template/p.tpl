@@ -72,7 +72,10 @@ $(document).ready(function(){
 <br/>
 <h4>
 This password can be viewed up to <b>{{views}}</b> more times ({{ip_str}}) before it expires in <b>{{days}}</b> days.<br/>
+<br/>
+Or, you can <a href="/d/{{token}}">Delete it now</a>.<br/>
 </h4>
+<br/>
 <br/>
 
 <a href="/">Store another password</a> | <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
