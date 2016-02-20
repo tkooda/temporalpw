@@ -21,7 +21,8 @@
   <li>Easy to audit: only around 150 lines of (easty to read, python) code</li><br/>
   <li>Uses <a href="http://bottlepy.org/">Bottle</a> framework, <a href="https://www.dlitz.net/software/pycrypto/">PyCrypto</a>, and <a href="https://pypi.python.org/pypi/base58">Base58</a> libraries</li><br/>
   <li><a href="http://github.com/tkooda/temporalpw">100% open source</a></li><br/>
-  <li>hosted on Google's App Engine servers</li><br/>
+  <li>Hosted on Google's App Engine servers</li><br/>
+  <li>The my-IP-only option only stores a salted hash of your IP</li><br/>
   <li>Please donate a few pennies via Bitcoin to help keep this service free forever: <a href="bitcoin:1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp">1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp</a></li><br/>
 </ul>
 

@@ -7,6 +7,7 @@
 from bottle import Bottle, request, template, redirect, abort
 from Crypto import Random
 from Crypto.Cipher import AES
+from Crypto.Hash import SHA
 from base58 import b58encode, b58decode
 from google.appengine.ext import ndb, webapp
 import datetime
@@ -23,6 +24,7 @@ class Password( ndb.Model ):
     ciphertext = ndb.BlobProperty( required = True )
     remaining_views = ndb.IntegerProperty( required = True )
     expire_date = ndb.DateTimeProperty( required = True )
+    ip_hash = ndb.StringProperty()
 
 bottle = Bottle()
 
@@ -40,8 +42,9 @@ def about():
 @bottle.post( "/new" )
 def new():
     secret = request.POST.get( "secret" ).strip()
-    views  = int( request.POST.get( "views"  ).strip() )
-    days   = int( request.POST.get( "days"   ).strip() )
+    views = int( request.POST.get( "views" ).strip() )
+    days = int( request.POST.get( "days" ).strip() )
+    myiponly = request.POST.get( "myiponly" )
     
     if len( secret ) < 1 or len( secret ) > MAX_SECRET \
        or views < 1 or views > MAX_VIEWS \
@@ -63,6 +66,10 @@ def new():
                          ciphertext = ciphertext,
                          remaining_views = views + 1,
                          expire_date = expire )
+    if myiponly:
+        ip_salt = SHA.new( Random.get_random_bytes( 8 ) ).hexdigest()[ : 8 ]
+        password.ip_hash = ip_salt + ":" + SHA.new( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest()
+    
     password.put()
     
     redirect( "/p/" + encoded_key )
@@ -84,6 +91,11 @@ def p( token ):
     if password.remaining_views < 1 or password.expire_date < datetime.datetime.now():
         password.key.delete() # delete expired immediatley, don't wait for cron
         return template( "template/expired" )
+    
+    if password.ip_hash:
+        ip_salt, ip_hash = password.ip_hash.split( ":", 1 )
+        if ip_hash == SHA.new( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest():
+            return template( "template/denied" )
     
     password.remaining_views -= 1
     password.put()
