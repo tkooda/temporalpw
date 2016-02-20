@@ -94,7 +94,7 @@ def p( token ):
     
     if password.ip_hash:
         ip_salt, ip_hash = password.ip_hash.split( ":", 1 )
-        if ip_hash == SHA.new( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest():
+        if not ip_hash == SHA.new( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest():
             return template( "template/denied" )
     
     password.remaining_views -= 1
