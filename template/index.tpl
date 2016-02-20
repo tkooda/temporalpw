@@ -35,13 +35,14 @@ $(document).ready(function(){
 
 <br/>
 <br/>
+<h1><a href="/">Temporal.pw</a> is a way to temporarily store passwords so that you can send temporary URLs to them via E-Mail or Instant Messaging.</h1>
 <br/>
 <br/>
 
 <form role="form" id="myForm" name="myForm" action="/new" method="post" onsubmit="return validateForm()">
 <div class="form-group">
 
-<label for="inputlg"><h1>Enter a password to create a temporary secure URL for:</h1></label>
+<label for="inputlg"><h2>Enter a password to create a temporary secure URL for:</h2></label>
 <div class="col-xs-4 col-xs-offset-4 text-center">
   <input type="text" id="secret" name="secret" placeholder="Password" class="form-control input-lg text-center">
 </div>
