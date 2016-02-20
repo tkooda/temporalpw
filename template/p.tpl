@@ -65,7 +65,7 @@ $(document).ready(function(){
 <h1><span id="password" style="font-family: monospace">{{cleartext}}</span></h1>
 <hr>
 <span class="input-group-btn">
-  <button id="btnPass" class="btn btn-primary mytooltip" data-placement="right">Copy Password to clipboard</button>
+  <button id="btnPass" class="btn btn-primary mytooltip" data-placement="right">Copy password to clipboard</button>
 </span>
 
 <br/>
