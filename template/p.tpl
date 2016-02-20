@@ -19,20 +19,30 @@ $(document).ready(function(){
 
   ZeroClipboard.config( { swfPath: "/static/ZeroClipboard.swf" } );
 
-  var client = new ZeroClipboard($("#btnCopy"));
-  client.on("copy", function (event) {
+  var clientURL = new ZeroClipboard($("#btnURL"));
+  var clientPass = new ZeroClipboard($("#btnPass"));
+
+  var $bridge = $("#global-zeroclipboard-html-bridge");
+
+  clientURL.on("copy", function(event, data) {
       var copiedValue = $('#url').val();
       var clipboard = event.clipboardData;
       clipboard.setData("text/plain", copiedValue);
   });
-
-  var $bridge = $("#global-zeroclipboard-html-bridge");
-
-  client.on("aftercopy", function() {
-    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied!").tooltip("fixTitle").tooltip("show");
+  clientURL.on("aftercopy", function() {
+    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied URL!").tooltip("fixTitle").tooltip("show");
   });
   
-  $('.mytooltip').mouseleave(function(){
+  clientPass.on("copy", function(event, data) {
+      var copiedValue = $('#password').text();
+      var clipboard = event.clipboardData;
+      clipboard.setData("text/plain", copiedValue);
+  });
+  clientPass.on("aftercopy", function() {
+    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied password!").tooltip("fixTitle").tooltip("show");
+  });
+  
+  $('.mytooltip').mouseleave( function() {
     $bridge.tooltip("disable");
   });
 
@@ -44,7 +54,7 @@ $(document).ready(function(){
 <br/>
 <input type="text" id="url" class="input-lg col-lg-5 col-centered text-center" value="https://temporal.pw/p/{{token}}" readonly>
 <span class="input-group-btn">
-  <button id="btnCopy" class="btn btn-primary mytooltip">Copy URL to clipboard</button>
+  <button id="btnURL" class="btn btn-primary mytooltip">Copy temporary URL to clipboard</button>
 </span>
 
 <br/>
@@ -52,8 +62,11 @@ $(document).ready(function(){
 <h2>Your password is:</h2>
 
 <hr>
-<h1>{{cleartext}}</h1>
+<h1><span id="password" style="font-family: monospace">{{cleartext}}</span></h1>
 <hr>
+<span class="input-group-btn">
+  <button id="btnPass" class="btn btn-primary mytooltip">Copy Password to clipboard</button>
+</span>
 
 <br/>
 <br/>
