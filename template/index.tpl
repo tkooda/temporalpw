@@ -9,6 +9,7 @@
 
 <style type="text/css">
   body { background: #d3d3d3 !important; }
+  h1 { font-family: 'Cooper Black', serif; }
 </style>
 
 <script language="javascript">
