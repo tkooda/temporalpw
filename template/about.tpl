@@ -24,7 +24,7 @@
   <li><a href="http://github.com/tkooda/temporalpw">100% open source</a>.</li><br/>
   <li>Hosted on Google's App Engine servers.</li><br/>
   <li>The IP restriction option only stores a salted hash of your IP.</li><br/>
-  <li>Please donate a few pennies via Bitcoin to help keep this service free forever: <a href="bitcoin:1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp">1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp</a></li><br/>
+  <li>Please consider donating a few pennies via Bitcoin to help keep this service free forever: <a href="bitcoin:1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp">1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp</a></li><br/>
 </ul>
 
 </h4>

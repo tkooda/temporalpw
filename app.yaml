@@ -13,6 +13,12 @@ handlers:
 
 - url: /static
   static_dir: static
+  secure: always
+
+- url: /robots\.txt
+  static_files: static/robots.txt
+  upload: static/robots.txt
+  secure: always
 
 - url: .*
   script: main.bottle
@@ -30,5 +36,3 @@ libraries:
 - name: pycrypto
   version: "2.6"
 
-#- name: jinja2
-#  version: latest

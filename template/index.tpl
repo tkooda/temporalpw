@@ -3,6 +3,7 @@
  <title>Temporal.PW - Temporary secure storage for passwords</title>
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <link rel="stylesheet" href="/static/bootstrap.min.css">
+ <script src="/static/jquery.min.js"></script>
 </head>
 <body>
 
@@ -12,11 +13,22 @@
 
 <script language="javascript">
 function validateForm() {
-  var x = document.forms["password"]["secret"].value;
-  if ( x == null || x == "" ) {
+  var x = document.forms["myForm"]["secret"].value;
+  if (x == null || x == "") {
     return false;
   }
-}
+};
+
+$(document).ready(function(){
+  $("#btn").prop("disabled", true);
+
+  $("#secret").on('input', function() {
+    if($(this).val().length)
+        $("#btn").prop("disabled", false);
+    else
+        $("#btn").prop("disabled", true);
+  });
+});
 </script>
 
 <div class="container text-center">
@@ -25,17 +37,20 @@ function validateForm() {
 <br/>
 <br/>
 <br/>
-<form role="form" name="password" action="/new" method="post" onsubmit="return validateForm()">
+
+<form role="form" id="myForm" name="myForm" action="/new" method="post" onsubmit="return validateForm()">
 <div class="form-group">
 
-<label for="inputlg"><h1>Enter a password to create a temporary URL for:</h1></label>
+<label for="inputlg"><h1>Enter a password to create a temporary secure URL for:</h1></label>
 <div class="col-xs-4 col-xs-offset-4 text-center">
-  <input type="text" name="secret" placeholder="Password" class="form-control input-lg text-center" >
+  <input type="text" id="secret" name="secret" placeholder="Password" class="form-control input-lg text-center">
 </div>
+
 <br/>
 <br/>
 <br/>
 <br/>
+
 <h4>
 <div>
 Only allow it to be viewed up to <select name="views">
@@ -90,13 +105,15 @@ Only allow it to be viewed up to <select name="views">
 <br/>
 </h4>
 
-<button type="submit" class="btn btn-primary btn-lg">Get temporary URL for this password</button>
+<input type="submit" id="btn" class="btn btn-primary btn-lg" value="Get temporary URL for this password">
 
 </div>
 </form>
+
 <br/>
 (Do not include any information that identifies what the password is for.)<br/>
 <br/>
+
 <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
 
 </div>
