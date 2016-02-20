@@ -71,7 +71,7 @@ $(document).ready(function(){
 <br/>
 <br/>
 <h4>
-This password can be viewed up to <b>{{views}}</b> more times before it expires in <b>{{days}}</b> days.<br/>
+This password can be viewed up to <b>{{views}}</b> more times ({{ip_str}}) before it expires in <b>{{days}}</b> days.<br/>
 </h4>
 <br/>
 

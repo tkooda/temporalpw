@@ -96,6 +96,9 @@ def p( token ):
         ip_salt, ip_hash = password.ip_hash.split( ":", 1 )
         if not ip_hash == SHA.new( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest():
             return template( "template/denied" )
+        ip_str = "only from " + os.environ[ "REMOTE_ADDR" ]
+    else:
+        ip_str = "from any IP"
     
     password.remaining_views -= 1
     password.put()
@@ -110,7 +113,7 @@ def p( token ):
                                      "cleartext": cleartext,
                                      "views": password.remaining_views,
                                      "days": days.days,
-                                     "ip": os.environ["REMOTE_ADDR"] } )
+                                     "ip_str": ip_str } )
 
 
 @bottle.error( 404 )
