@@ -2,10 +2,10 @@
 <head>
  <title>Temporal.PW - temporary secure storage for passwords</title>
  <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="/static/bootstrap.min.css">
- <script src="/static/jquery.min.js"></script>
- <script src="/static/bootstrap.min.js"></script>
- <script type="text/javascript" src="/static/ZeroClipboard.min.js"></script>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
 </head>
 <body>
 
@@ -17,6 +17,7 @@
 <script>
 $(document).ready(function(){
 
+//  ZeroClipboard.config( { swfPath: "https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf" } );
   ZeroClipboard.config( { swfPath: "/static/ZeroClipboard.swf" } );
 
   var clientURL = new ZeroClipboard($("#btnURL"));
