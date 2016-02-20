@@ -28,17 +28,11 @@ $(document).ready(function(){
 
   var $bridge = $("#global-zeroclipboard-html-bridge");
 
-  client.on("ready", function(e) {
-    $bridge.data("placement", "right");
-    $bridge.tooltip("disable");
+  client.on("aftercopy", function() {
+    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied!").tooltip("fixTitle").tooltip("show");
   });
-
-  client.on("aftercopy", function(e) {
-    $bridge.data("placement", "right").tooltip("enable");
-    $bridge.data("placement", "right").attr("title", "Copied!").tooltip("fixTitle").tooltip("show").tooltip("enable"); // yes
-  });
-
-  $('#btnCopy').mouseleave(function(){
+  
+  $('.mytooltip').mouseleave(function(){
     $bridge.tooltip("disable");
   });
 
@@ -50,7 +44,7 @@ $(document).ready(function(){
 <br/>
 <input type="text" id="url" class="input-lg col-lg-5 col-centered text-center" value="https://temporal.pw/p/{{token}}" readonly>
 <span class="input-group-btn">
-  <button id="btnCopy" class="btn btn-primary">Copy URL to clipboard</button>
+  <button id="btnCopy" class="btn btn-primary mytooltip">Copy URL to clipboard</button>
 </span>
 
 <br/>
