@@ -8,8 +8,9 @@ from bottle import Bottle, request, template, redirect, abort
 from Crypto import Random
 from Crypto.Cipher import AES
 from base58 import b58encode, b58decode
-from google.appengine.ext import ndb
+from google.appengine.ext import ndb, webapp
 import datetime
+import os
 
 # http://stackoverflow.com/questions/14716338/pycrypto-how-does-the-initialization-vector-work  - no iv for aes needed
 IV = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" # guard against ID/Key collisions in a loop so that we don't need to encode a unique IV along with the key, which would result in a URL token that's twice as long
@@ -28,7 +29,7 @@ bottle = Bottle()
 
 @bottle.get( "/" )
 def index():
-    return template( "template/index" )
+    return template( "template/index", { "ip": os.environ[ "REMOTE_ADDR" ] } )
 
 
 @bottle.get( "/about" )
@@ -87,12 +88,17 @@ def p( token ):
     password.remaining_views -= 1
     password.put()
     
-    cleartext = AES.new( decoded, AES.MODE_CFB, IV ).decrypt( password.ciphertext )
+    try:
+        cleartext = AES.new( decoded, AES.MODE_CFB, IV ).decrypt( password.ciphertext )
+    except:
+        return template( "template/invalid" )
     
+    days = password.expire_date - datetime.datetime.now()
     return template( "template/p", { "token": token,
                                      "cleartext": cleartext,
                                      "views": password.remaining_views,
-                                     "expire": password.expire_date } )
+                                     "days": days.days,
+                                     "ip": os.environ["REMOTE_ADDR"] } )
 
 
 @bottle.error( 404 )

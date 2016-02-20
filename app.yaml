@@ -11,12 +11,13 @@ handlers:
   script: main.bottle
   login: admin
 
+- url: /static
+  static_dir: static
+
 - url: .*
   script: main.bottle
   secure: always
 
-#- url: /static
-#  static_dir: static
 
 # Third party libraries that are included in the App Engine SDK must be listed
 # here if you want to use them.  See
