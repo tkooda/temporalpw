@@ -17,7 +17,7 @@
 <script>
 $(document).ready(function(){
 
-//  ZeroClipboard.config( { swfPath: "https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf" } );
+//  ZeroClipboard.config( { swfPath: "https://ajax.cdnjs.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf" } );
   ZeroClipboard.config( { swfPath: "/static/ZeroClipboard.swf" } );
 
   var clientURL = new ZeroClipboard($("#btnURL"));

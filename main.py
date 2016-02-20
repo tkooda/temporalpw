@@ -29,6 +29,10 @@ class Password( ndb.Model ):
 bottle = Bottle()
 
 
+#@bottle.get( "/.well-known/acme-challenge/<challenge>" )
+#def letsencrypt( challenge ):
+#    return "" # letsencrypt.org
+
 @bottle.get( "/" )
 def index():
     return template( "template/index", { "ip": os.environ[ "REMOTE_ADDR" ] } )
