@@ -29,9 +29,11 @@ class Password( ndb.Model ):
 bottle = Bottle()
 
 
-#@bottle.get( "/.well-known/acme-challenge/<challenge>" )
-#def letsencrypt( challenge ):
-#    return "" # letsencrypt.org
+# SSL cert from letsencrypt.org
+@bottle.get( "/.well-known/acme-challenge/<challenge>" )
+def letsencrypt( challenge ):
+    return "NOTYET"
+
 
 @bottle.get( "/" )
 def index():

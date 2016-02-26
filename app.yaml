@@ -21,8 +21,9 @@ handlers:
   secure: always
 
 # for letsencrypt.org SSL cert:
-#- url: /.well-known/acme-challenge/*
-#  script: main.bottle
+- url: /.well-known/acme-challenge/*
+  script: main.bottle
+  secure: never
 
 - url: .*
   script: main.bottle
