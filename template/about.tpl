@@ -16,15 +16,13 @@
 <h4>
 <br/>
 <ul>
-  <li>Provides secure, private, temporary (temporal) storage for passwords so they can be safely transmitted via insecure channels (email, IM, SMS, etc.)</li><br/>
+  <li>Provides secure, private, temporary (temporal) encrypted storage for passwords so they can be safely transmitted via insecure channels (email, IM, SMS, etc.)</li><br/>
   <li>This is safer than just sending the password unencrypted or whenever end-to-end encryption isn't established / available.</li><br/>
-  <li>Passwords are only stored after being encrypted with AES and cannot be decrypted without the unique URL even if the database is exposed.</li><br/>
-  <li>The passwords are never available to anyone after their expiration date and are permanently deleted from the database after expiration.</li><br/>
+  <li>Passwords are only stored AFTER being encrypted by the browser using AES, and the (random 128 bit) decryption key is NEVER sent to the server.</li><br/>
+  <li>The passwords are not accessible after their expiration date, and are delieted immediately after being viewed a single time.</li><br/>
   <li><a href="http://github.com/tkooda/temporalpw">100% open source</a>.</li><br/>
-  <li>Easy to audit: only around 150 lines of (easty to read, python) code.</li><br/>
-  <li>Only uses common <a href="http://bottlepy.org/">Bottle</a> framework, <a href="https://www.dlitz.net/software/pycrypto/">PyCrypto</a>, and <a href="https://pypi.python.org/pypi/base58">Base58</a> libraries for the backend, and <a href="https://jquery.com/">jQuery</a>, <a href="http://getbootstrap.com/">bootstrap</a>, and <a href="http://zeroclipboard.org/">ZeroClipboard</a> for the frontend.</li><br/>
-  <li>Hosted on <a href="https://cloud.google.com/appengine/">Google's App Engine</a> servers.</li><br/>
-  <li>The IP restriction option only stores a salted hash of your IP so examining the database can't determine where the password was saved from.</li><br/>
+  <li>Easy to audit: only a few hundred lines of python and JavaScript.</li><br/>
+  <li>Uses common <a href="http://bottlepy.org/">Bottle</a> framework, <a href="https://www.dlitz.net/software/pycrypto/">PyCrypto</a>, and <a href="https://pypi.python.org/pypi/base58">Base58</a> libraries for the backend, and <a href="https://jquery.com/">jQuery</a>, <a href="http://getbootstrap.com/">bootstrap</a>, and <a href="http://zeroclipboard.org/">ZeroClipboard</a> for the frontend.</li><br/>
   <li>If you'd like to help keep this service free forever: you can send a few pennies via Bitcoin to: <a href="bitcoin:1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp">1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp</a></li><br/>
 </ul>
 

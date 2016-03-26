@@ -3,7 +3,12 @@
  <title>Temporal.PW - Temporary secure storage for passwords</title>
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+ <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+ <script type="text/javascript" src="/static/aes.js"></script>
+ <script type="text/javascript" src="/static/Base58.js"></script>
+ <script type="text/javascript" src="/static/secure-random.js"></script>
 </head>
 <body>
 
@@ -13,39 +18,153 @@
 </style>
 
 <script language="javascript">
-function validateForm() {
-  var x = document.forms["myForm"]["secret"].value;
-  if (x == null || x == "") {
-    return false;
-  }
+var have_url = false;
+
+  function simple_checksum(s) { // Schnaader
+    var i;
+    var chk = 0x12345678;
+    for (i = 0; i < s.length; i++) {
+      chk += (s.charCodeAt(i) * (i + 1));
+    }
+//    return chk;
+    return (chk & 0xff).toString(16);
+  };
+
+
+//var bootstrapButton = $.fn.button.noConflict();
+//$.fn.bootstrapBtn = bootstrapButton;
+
+function generate_url() {
+  // generate random key byte array ..
+  var key = secureRandom.randomUint8Array( 16 );  // random 128 bit AES key
+//  console.log( "key: " + key );
+//  console.log( "key len: " + key.length );
+  
+  // encode key byte array ..
+  var encoded_key = Base58.encode( key );
+//  console.log( "encoded_key: " + encoded_key );
+//  console.log( "encoded_key len: " + encoded_key.length );
+  
+  // convert password string to byte array ..
+  var password = document.myForm.secret.value;
+//  console.log( "password: " + password );
+  
+  var password_bytes = aesjs.util.convertStringToBytes( password );
+//  console.log( "password_bytes: " + password_bytes );
+//  console.log( "password_bytes len: " + password_bytes.length );
+  
+  // encrypt password ..
+  var aesCtr = new aesjs.ModeOfOperation.ctr( key, new aesjs.Counter( 5 ) );
+  var encrypted_bytes = aesCtr.encrypt( password_bytes );
+//  console.log( "encrypted_bytes: " + encrypted_bytes );
+//  console.log( "encrypted_bytes len: " + encrypted_bytes.length );
+  
+  // encode encrypted password ..
+  var encoded_encrypted_bytes = Base58.encode( encrypted_bytes );
+  console.log( "encoded_encrypted_bytes: " + encoded_encrypted_bytes );
+//  console.log( "encoded_encrypted_bytes len: " + encoded_encrypted_bytes.length );
+  
+  $.post( "/new", 
+          { cipher: encoded_encrypted_bytes,
+            days: document.myForm.days.value,
+            myiponly: document.myForm.myiponly.value },
+          function( data, status ) { got_id( data, status, encoded_key ) } ); // encryption key is never sent to server, only to ajax success callback for building URL in browser
+  
+  return false;
 };
 
-$(document).ready(function(){
-  $("#btn").prop("disabled", true);
 
-  $("#secret").on('input', function() {
-    if($(this).val().length)
-        $("#btn").prop("disabled", false);
-    else
-        $("#btn").prop("disabled", true);
+function got_id( data, status, encoded_key ) {
+  console.log( "got_id status: " + status );
+  console.log( "got_id pw_id: " + data.pw_id );
+  console.log( "got_id encoded_key: " + encoded_key );
+  
+  // setup copying to clipboard ..
+  ZeroClipboard.config( { swfPath: "/static/ZeroClipboard.swf" } );
+  var clientPass = new ZeroClipboard( $( "#button" ) );
+  var $bridge = $( "#global-zeroclipboard-html-bridge" );
+  clientPass.on("copy", function(event, data) {
+      var copiedValue = document.myForm.secret.value;
+      var clipboard = event.clipboardData;
+      clipboard.setData( "text/plain", copiedValue );
+      console.log( "clipboard: " + copiedValue );
   });
+  clientPass.on("aftercopy", function() {
+    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied password!").tooltip("fixTitle").tooltip("show");
+  });
+  $('.mytooltip').mouseleave( function() {
+    $bridge.tooltip("disable");
+  });
+  
+  $("#docs").text( "This URL can be used ONCE to view the password:" );
+  
+  var token = data.pw_id + "-" + encoded_key;
+  console.log( "token: " + token );
+  console.log( "checksum: " + simple_checksum( token ) );
+
+  document.myForm.secret.value = "https://temporal.pw/p#" + token + simple_checksum( token );
+//  document.myForm.secret.value = "http://localhost:8080/p#" + token + simple_checksum( token );
+  $("#secret").attr( "readonly", true );
+  
+  $("#days").addClass("disabled");
+  $("#days").attr( "disabled", true );
+  
+  $("#myiponly").addClass("disabled");
+  $("#myiponly").attr( "disabled", true );
+  
+  $("#button").attr('value', "Copy URL to clipboard" );
+  
+  have_url = true;
+  
+  return false; // DEBUG
+};
+
+
+
+$(document).ready(function(){
+  $("#button").prop( "disabled", true );
+
+  $("#secret").on( "input", function() {
+    if($(this).val().length)
+        $("#button").prop( "disabled", false );
+    else
+        $("#button").prop( "disabled", true );
+  });
+  
+  $("#button").click(function(){
+    var secret = document.forms[ "myForm" ][ "secret" ].value;
+    if ( secret == null || secret == "" ) {
+      return false;
+    }
+    
+    if ( ! have_url ) {
+      generate_url();
+    }
+    
+    return false; // don't actually submit
+  });
+  
 });
+
+
 </script>
 
 <div class="container text-center">
 
 <br/>
 <br/>
-<h1><a href="/">Temporal.pw</a> is a way to temporarily store passwords so that you can send temporary URLs to them via E-Mail or Instant Messaging.</h1>
+<h1><a href="/">Temporal.pw</a> encrypts your password and temporarily stores the encrypted password until it is either viewed a single time or it expires, so that you can securely send passwords over the internet, and know that it was only ever viewed by a single recipient.  It can only be decrypted and viewed using the temporary URL.</h1>
+(The random 128 bit key to the encryption is generated by your browser and is never sent to the server)<br/>
 <br/>
 <br/>
 
-<form role="form" id="myForm" name="myForm" action="/new" method="post" onsubmit="return validateForm()">
+<!-- <form role="form" id="myForm" name="myForm" onsubmit="return buttonClick();"> -->
+<form role="form" id="myForm" name="myForm" action="">
 <div class="form-group">
 
-<label for="inputlg"><h2>Enter a password to create a temporary secure URL for:</h2></label>
-<div class="col-xs-4 col-xs-offset-4 text-center">
-  <input type="text" id="secret" name="secret" placeholder="Password" class="form-control input-lg text-center">
+<label for="inputlg"><h2><div id="docs">Enter a password to create a temporary secure URL for:</div></h2></label>
+<div class="col-xs-8 col-xs-offset-2 text-center">
+  <input type="text" id="secret" name="secret" placeholder="Enter a password to create a temporary URL for.." class="form-control input-lg text-center">
 </div>
 
 <br/>
@@ -55,7 +174,7 @@ $(document).ready(function(){
 
 <h4>
 <div>
-Only allow it to be viewed up to <select name="views">
+Make this URL expire in <select name="days" id="days">
   <option value="1">1</option>
   <option value="2">2</option>
   <option value="3" selected>3</option>
@@ -66,54 +185,27 @@ Only allow it to be viewed up to <select name="views">
   <option value="8">8</option>
   <option value="9">9</option>
   <option value="10">10</option>
-</select> times over the next <select name="days">
-  <option value="1">1</option>
-  <option value="2">2</option>
-  <option value="3" selected>3</option>
-  <option value="4">4</option>
-  <option value="5">5</option>
-  <option value="6">6</option>
-  <option value="7">7</option>
-  <option value="8">8</option>
-  <option value="9">9</option>
-  <option value="10">10</option>
-  <option value="11">11</option>
-  <option value="12">12</option>
-  <option value="13">13</option>
-  <option value="14">14</option>
   <option value="15">15</option>
-  <option value="16">16</option>
-  <option value="17">17</option>
-  <option value="18">18</option>
-  <option value="19">19</option>
   <option value="20">20</option>
-  <option value="21">21</option>
-  <option value="22">22</option>
-  <option value="23">23</option>
-  <option value="24">24</option>
-  <option value="25">25</option>
-  <option value="26">26</option>
-  <option value="27">27</option>
-  <option value="28">28</option>
-  <option value="29">29</option>
   <option value="30">30</option>
 </select> days.
 </div>
 
 <div class="checkbox">
- <label><input type="checkbox" name="myiponly">Only allow it to be viewed from my current IP address ({{ip}})</label>
+ <label><input type="checkbox" name="myiponly" id="myiponly">Only allow it to be viewed from my current IP address<br/>
+ <small>(useful for sending a password to someone in the same network)</small></label>
 </div>
 
 <br/>
 </h4>
 
-<input type="submit" id="btn" class="btn btn-primary btn-lg" value="Get temporary URL for this password">
+<input type="submit" id="button" class="btn btn-primary btn-lg mytooltip" value="Get temporary URL for this password">
 
 </div>
 </form>
 
 <br/>
-(Do not include any information that identifies what the password is for.)<br/>
+(Do not include any information that identifies what the password is for)<br/>
 <br/>
 
 <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
