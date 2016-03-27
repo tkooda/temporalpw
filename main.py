@@ -2,20 +2,18 @@
 
 ## temporal.pw  -  2016-02-14  -  Thor J. Kooda
 
-## 2016-03-26 : rewrote, move password encryption to client side, server is never sent any part of the key (browser does all encryption/decryption)
+## 2016-03-26 : rewrote. move password encryption to client side, server is never sent any part of the key (browser does all encryption/decryption)
 
 """Provide temporary URLs for viewing encrypted passwords."""
 
 from bottle import Bottle, request, template, abort
-from Crypto import Random ## FIXME: use 'random' instead, so no extra lib needed
-from Crypto.Hash import SHA ## FIXME: use hashlib instead, so no extra lib needed
-from base58 import b58encode, b58decode
 from google.appengine.ext import ndb, webapp
 import datetime
+import string
+import random
+import hashlib
 import os
 
-MAX_CIPHER = 1024
-MAX_DAYS = 30
 
 class Password( ndb.Model ):
     """temporary storage for encrypted password"""
@@ -47,6 +45,11 @@ def index():
     return template( "template/index", { "ip": os.environ[ "REMOTE_ADDR" ] } )
 
 
+@bottle.get( "/p" )
+def index():
+    return template( "template/p" )
+
+
 @bottle.get( "/about" )
 def about():
     return template( "template/about" )
@@ -58,14 +61,14 @@ def new():
     days = int( request.POST.get( "days" ).strip() )
     myiponly = request.POST.get( "myiponly" )
     
-    if len( cipher ) < 1 or len( cipher ) > MAX_CIPHER \
-       or days < 1 or days > MAX_DAYS:
+    if len( cipher ) < 1 or len( cipher ) > 1024 \
+       or days < 1 or days > 30:
         abort( 400, "invalid options" )
     
     ## generate unique pw_id ..
-    pw_id = b58encode( Random.get_random_bytes( 4 ) )
+    pw_id = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(4))
     while Password.get_by_id( pw_id ):
-        pw_id = b58encode( Random.get_random_bytes( 4 ) )
+        pw_id = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(4))
     
     expire = datetime.datetime.now() + datetime.timedelta( days = days )
     
@@ -74,17 +77,12 @@ def new():
                          expire_date = expire )
     if myiponly:
         ## only store a salted hash of the IP, for privacy
-        ip_salt = SHA.new( Random.get_random_bytes( 8 ) ).hexdigest()[ : 4 ]
-        password.ip_hash = ip_salt + ":" + SHA.new( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest()
+        ip_salt = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(4))
+        password.ip_hash = ip_salt + ":" + hashlib.sha1( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest()
     
     password.put()
     
     return { "pw_id": pw_id }
-
-
-@bottle.get( "/p" )
-def index():
-    return template( "template/p" )
 
 
 ## tkooda : 2016-03-26 : unused..
@@ -112,13 +110,7 @@ def get( pw_id ):
     return { "cipher": cipher }
 
 
-@bottle.error( 404 )
-def error_404( error ):
-    """Return a custom 404 error."""
-    return template( "template/404" )
-
-
-@bottle.get( "/cleanup" )
+@bottle.get( "/cleanup" ) # cron
 def cleanup():
     keys = Password.query( Password.expire_date < datetime.datetime.now() ).fetch( keys_only = True )
     ndb.delete_multi( keys )
