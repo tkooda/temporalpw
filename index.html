@@ -1,51 +1,203 @@
-<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Temporal.PW by tkooda</title>
+<head>
+ <title>Temporal.PW - Temporary secure storage for passwords</title>
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+ <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/swfobject/swfobject/master/swfobject/swfobject.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/master/index.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/jprichardson/secure-random/master/lib/secure-random.js"></script>
+</head>
+<body>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-light.css">
-    <meta name="viewport" content="width=device-width">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>Temporal.PW</h1>
-        <p>E-Mail passwords securely</p>
+<style type="text/css">
+  body { background: #d3d3d3 !important; }
+  h1 { font-family: 'Cooper Black', serif; }
+</style>
 
-        <p class="view"><a href="https://github.com/tkooda/temporalpw">View the Project on GitHub <small>tkooda/temporalpw</small></a></p>
+<script language="javascript">
+  var have_url = false;
+
+  function simple_checksum(s) { // based on Schnaader's
+    var i;
+    var chk = 0x12345678;
+    for (i = 0; i < s.length; i++) {
+      chk += (s.charCodeAt(i) * (i + 1));
+    }
+    return (chk & 0xff).toString(16); // 2-char is sufficient
+  };
 
 
-        <ul>
-          <li><a href="https://github.com/tkooda/temporalpw/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/tkooda/temporalpw/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/tkooda/temporalpw">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>
-<a id="temporalpw" class="anchor" href="#temporalpw" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="https://Temporal.PW/">Temporal.PW</a>
-</h1>
+function generate_url() {
+  // generate random key byte array ..
+  var key = secureRandom.randomUint8Array( 16 );  // random 128 bit AES key
+  
+  // encode key byte array ..
+  var encoded_key = Base58.encode( key );
+  
+  // convert password string to byte array ..
+  var password = document.myForm.secret.value;
+  
+  var password_bytes = aesjs.util.convertStringToBytes( password );
+  
+  // encrypt password ..
+  var aesCtr = new aesjs.ModeOfOperation.ctr( key, new aesjs.Counter( 5 ) );
+  var encrypted_bytes = aesCtr.encrypt( password_bytes );
+  
+  // encode encrypted password ..
+  var encoded_encrypted_bytes = Base58.encode( encrypted_bytes );
+  
+  $.post( "/new", 
+          { cipher: encoded_encrypted_bytes, // ONLY send encrypted password to server, NEVER send the key!
+            days: document.myForm.days.value,
+            myiponly: document.myForm.myiponly.checked },
+          function( data, status ) { got_id( data, status, encoded_key ) } ); // encryption key is never sent to server, only to ajax success callback for building URL in browser
+  
+  return false;
+};
 
-<p><a href="https://Temporal.PW/">Temporal.PW</a> provides temporary secure storage for passwords so you can safely transmit them over insecure channels like E-Mail, Instant Messaging, SMS, etc.</p>
 
-<ul>
-<li>All encryption / decryption is done in the client browser, the AES key is never sent to the server.</li>
-<li>Passwords are only ever viewable a single time, so you can be certain that only one recipient viewed it.</li>
-<li>You can choose to restrict unique temporary password URLs so that they're only accessible from your same IP address (useful for sending passwords securely to someone in the same network).</li>
-</ul>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/tkooda">tkooda</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
+function got_id( data, status, encoded_key ) {
+  // setup copying to clipboard ..
+  ZeroClipboard.config( { swfPath: "/static/ZeroClipboard.swf" } );
+  var clientPass = new ZeroClipboard( $( "#button" ) );
+  var $bridge = $( "#global-zeroclipboard-html-bridge" );
+  clientPass.on("copy", function(event, data) {
+      var copiedValue = document.myForm.secret.value;
+      var clipboard = event.clipboardData;
+      clipboard.setData( "text/plain", copiedValue );
+  });
+  clientPass.on("aftercopy", function() {
+    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied password!").tooltip("fixTitle").tooltip("show");
+  });
+  $('.mytooltip').mouseleave( function() {
+    $bridge.tooltip("disable");
+  });
+  
+  $("#docs").text( "This URL can be used ONCE to view the password:" );
+  
+  var token = data.pw_id + "-" + encoded_key;
+
+  document.myForm.secret.value = "https://Temporal.PW/p#" + token + simple_checksum( token );
+  $("#secret").attr( "readonly", true );
+  
+  var info = "(this URL will expire in " + document.myForm.days.value + " days";
+  if ( document.myForm.myiponly.checked ) {
+    info = info + ", and it is only viewable from this same IP address";
+  }
+  $("#settings").html( info + ")<br/>" );
+  $("#warning").addClass("hidden");
+  
+  if ( swfobject.hasFlashPlayerVersion( "1" ) ) {
+    $("#button").attr( "value", "Copy URL to clipboard" );
+  } else {
+    $("#button").addClass("hidden");
+  }
+  have_url = true;
+  
+  return false; // DEBUG
+};
+
+
+
+$(document).ready(function(){
+  $("#button").prop( "disabled", true );
+
+  $("#secret").on( "input", function() {
+    if($(this).val().length)
+        $("#button").prop( "disabled", false );
+    else
+        $("#button").prop( "disabled", true );
+  });
+  
+  $("#button").click(function(){
+    var secret = document.forms[ "myForm" ][ "secret" ].value;
+    if ( secret == null || secret == "" ) {
+      return false;
+    }
     
-  </body>
+    if ( ! have_url ) {
+      generate_url();
+    }
+    
+    return false; // don't actually submit
+  });
+  
+});
+
+$(document).on('click','input[type=text]',function(){ this.select(); });
+
+</script>
+
+<div class="container text-center">
+
+<br/>
+<br/>
+<h1>E-Mail passwords securely with <a href="/">Temporal.PW</a></h1>
+<br/>
+<br/>
+
+<!-- <form role="form" id="myForm" name="myForm" onsubmit="return buttonClick();"> -->
+<form role="form" id="myForm" name="myForm" action="">
+<div class="form-group">
+
+<label for="inputlg"><h2><div id="docs">Enter a password to create a temporary secure URL for:</div></h2></label>
+<div class="col-xs-8 col-xs-offset-2 text-center">
+  <input type="text" id="secret" name="secret" placeholder="Enter a password" class="form-control input-lg text-center">
+</div>
+
+<br/>
+<br/>
+<br/>
+<br/>
+
+<h4>
+<span id="settings">
+<div>
+Make this URL expire in <select name="days" id="days">
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3" selected>3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+  <option value="7">7</option>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+  <option value="15">15</option>
+  <option value="20">20</option>
+  <option value="30">30</option>
+</select> days.
+</div>
+
+<div class="checkbox">
+ <label><input type="checkbox" name="myiponly" id="myiponly">Only allow it to be viewed from my current IP address<br/>
+ <small>(useful for sending a password to someone in the same office / network)</small></label>
+</div>
+
+</span>
+
+<br/>
+</h4>
+
+<input type="submit" id="button" class="btn btn-primary btn-lg mytooltip" value="Get temporary URL for this password">
+
+</div>
+</form>
+
+<br/>
+<span id="warning">
+(Do not include any information that identifies what the password is for)<br/>
+</span>
+<br/>
+
+<a href="/">Send another password</a> | <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
+
+</div>
+
+</body>
 </html>
