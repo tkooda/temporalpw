@@ -1,0 +1,6 @@
+{
+  "name": "Temporal.PW",
+  "tagline": "E-Mail passwords securely",
+  "body": "# [Temporal.PW]\r\n\r\n[Temporal.PW] provides temporary secure storage for passwords so you can safely transmit them over insecure channels like E-Mail, Instant Messaging, SMS, etc.\r\n  - All encryption / decryption is done in the client browser, the AES key is never sent to the server.\r\n  - Passwords are only ever viewable a single time, so you can be certain that only one recipient viewed it.\r\n  - You can choose to restrict unique temporary password URLs so that they're only accessible from your same IP address (useful for sending passwords securely to someone in the same network).\r\n\r\n\r\n[Temporal.PW]: <https://Temporal.PW/>\r\n[PyCrypto]: https://www.dlitz.net/software/pycrypto/\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
