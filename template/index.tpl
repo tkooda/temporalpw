@@ -53,7 +53,7 @@ function generate_url() {
   $.post( "/new", 
           { cipher: encoded_encrypted_bytes, // ONLY send encrypted password to server, NEVER send the key!
             days: document.myForm.days.value,
-            myiponly: document.myForm.myiponly.value },
+            myiponly: document.myForm.myiponly.checked },
           function( data, status ) { got_id( data, status, encoded_key ) } ); // encryption key is never sent to server, only to ajax success callback for building URL in browser
   
   return false;

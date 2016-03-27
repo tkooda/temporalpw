@@ -61,7 +61,7 @@ def new():
     days = int( request.POST.get( "days" ).strip() )
     myiponly = request.POST.get( "myiponly" )
     
-    if len( cipher ) < 1 or len( cipher ) > 1450 \
+    if len( cipher ) < 1 or len( cipher ) > 1495 \
        or days < 1 or days > 30:
         abort( 400, "invalid options" )
     
@@ -75,7 +75,8 @@ def new():
     password = Password( id = pw_id,
                          ciphertext = cipher,
                          expire_date = expire )
-    if myiponly:
+    
+    if myiponly == "true":
         ## only store a salted hash of the IP, for privacy
         ip_salt = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(4))
         password.ip_hash = ip_salt + ":" + hashlib.sha1( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest()
