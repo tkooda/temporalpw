@@ -6,9 +6,9 @@
  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
- <script type="text/javascript" src="/static/aes.js"></script>
- <script type="text/javascript" src="/static/Base58.js"></script>
- <script type="text/javascript" src="/static/secure-random.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/master/index.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/jprichardson/secure-random/master/lib/secure-random.js"></script>
 </head>
 <body>
 
@@ -18,54 +18,39 @@
 </style>
 
 <script language="javascript">
-var have_url = false;
+  var have_url = false;
 
-  function simple_checksum(s) { // Schnaader
+  function simple_checksum(s) { // based on Schnaader's
     var i;
     var chk = 0x12345678;
     for (i = 0; i < s.length; i++) {
       chk += (s.charCodeAt(i) * (i + 1));
     }
-//    return chk;
-    return (chk & 0xff).toString(16);
+    return (chk & 0xff).toString(16); // 2-char is sufficient
   };
 
-
-//var bootstrapButton = $.fn.button.noConflict();
-//$.fn.bootstrapBtn = bootstrapButton;
 
 function generate_url() {
   // generate random key byte array ..
   var key = secureRandom.randomUint8Array( 16 );  // random 128 bit AES key
-//  console.log( "key: " + key );
-//  console.log( "key len: " + key.length );
   
   // encode key byte array ..
   var encoded_key = Base58.encode( key );
-//  console.log( "encoded_key: " + encoded_key );
-//  console.log( "encoded_key len: " + encoded_key.length );
   
   // convert password string to byte array ..
   var password = document.myForm.secret.value;
-//  console.log( "password: " + password );
   
   var password_bytes = aesjs.util.convertStringToBytes( password );
-//  console.log( "password_bytes: " + password_bytes );
-//  console.log( "password_bytes len: " + password_bytes.length );
   
   // encrypt password ..
   var aesCtr = new aesjs.ModeOfOperation.ctr( key, new aesjs.Counter( 5 ) );
   var encrypted_bytes = aesCtr.encrypt( password_bytes );
-//  console.log( "encrypted_bytes: " + encrypted_bytes );
-//  console.log( "encrypted_bytes len: " + encrypted_bytes.length );
   
   // encode encrypted password ..
   var encoded_encrypted_bytes = Base58.encode( encrypted_bytes );
-  console.log( "encoded_encrypted_bytes: " + encoded_encrypted_bytes );
-//  console.log( "encoded_encrypted_bytes len: " + encoded_encrypted_bytes.length );
   
   $.post( "/new", 
-          { cipher: encoded_encrypted_bytes,
+          { cipher: encoded_encrypted_bytes, // ONLY send encrypted password to server, NEVER send the key!
             days: document.myForm.days.value,
             myiponly: document.myForm.myiponly.value },
           function( data, status ) { got_id( data, status, encoded_key ) } ); // encryption key is never sent to server, only to ajax success callback for building URL in browser
@@ -75,10 +60,6 @@ function generate_url() {
 
 
 function got_id( data, status, encoded_key ) {
-  console.log( "got_id status: " + status );
-  console.log( "got_id pw_id: " + data.pw_id );
-  console.log( "got_id encoded_key: " + encoded_key );
-  
   // setup copying to clipboard ..
   ZeroClipboard.config( { swfPath: "/static/ZeroClipboard.swf" } );
   var clientPass = new ZeroClipboard( $( "#button" ) );
@@ -87,7 +68,6 @@ function got_id( data, status, encoded_key ) {
       var copiedValue = document.myForm.secret.value;
       var clipboard = event.clipboardData;
       clipboard.setData( "text/plain", copiedValue );
-      console.log( "clipboard: " + copiedValue );
   });
   clientPass.on("aftercopy", function() {
     $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied password!").tooltip("fixTitle").tooltip("show");
@@ -99,11 +79,8 @@ function got_id( data, status, encoded_key ) {
   $("#docs").text( "This URL can be used ONCE to view the password:" );
   
   var token = data.pw_id + "-" + encoded_key;
-  console.log( "token: " + token );
-  console.log( "checksum: " + simple_checksum( token ) );
 
   document.myForm.secret.value = "https://temporal.pw/p#" + token + simple_checksum( token );
-//  document.myForm.secret.value = "http://localhost:8080/p#" + token + simple_checksum( token );
   $("#secret").attr( "readonly", true );
   
   $("#days").addClass("disabled");
@@ -146,6 +123,7 @@ $(document).ready(function(){
   
 });
 
+$(document).on('click','input[type=text]',function(){ this.select(); });
 
 </script>
 
@@ -153,8 +131,7 @@ $(document).ready(function(){
 
 <br/>
 <br/>
-<h1><a href="/">Temporal.pw</a> encrypts your password and temporarily stores the encrypted password until it is either viewed a single time or it expires, so that you can securely send passwords over the internet, and know that it was only ever viewed by a single recipient.  It can only be decrypted and viewed using the temporary URL.</h1>
-(The random 128 bit key to the encryption is generated by your browser and is never sent to the server)<br/>
+<h1>E-Mail passwords securely with <a href="/">Temporal.pw</a>.</h1>
 <br/>
 <br/>
 
@@ -208,7 +185,7 @@ Make this URL expire in <select name="days" id="days">
 (Do not include any information that identifies what the password is for)<br/>
 <br/>
 
-<a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
+<a href="/">Store another password</a> | <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
 
 </div>
 

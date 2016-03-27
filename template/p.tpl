@@ -6,8 +6,8 @@
  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
- <script type="text/javascript" src="/static/aes.js"></script>
- <script type="text/javascript" src="/static/Base58.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/master/index.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js"></script>
 </head>
 <body>
 
@@ -19,14 +19,13 @@
 <script>
 $(document).ready(function(){
 
-  function simple_checksum(s) { // Schnaader
+  function simple_checksum(s) { // based on Schnaader's
     var i;
     var chk = 0x12345678;
     for (i = 0; i < s.length; i++) {
       chk += (s.charCodeAt(i) * (i + 1));
     }
-//    return chk;
-    return (chk & 0xff).toString(16);
+    return (chk & 0xff).toString(16); // 2-char is sufficient
   };
 
 
@@ -48,45 +47,29 @@ $(document).ready(function(){
   
   // attempt to fetch password based on URL fragment (only the password ID is sent to the server, NOT the decryption key)
   if ( window.location.hash ) {
-    var token = window.location.hash.substring( 1 ).slice( 0, -2 );
-    var checksum = window.location.hash.substring( 1 ).slice( -2 ); // checksum for better error message
+    var token = window.location.hash.substring( 1 ).slice( 0, -2 ); // strip "#" from URL fragment
+    var checksum = window.location.hash.substring( 1 ).slice( -2 ); // checksum used for better error message
     var id_and_key = token.split( "-", 2 );
-    var pw_id = id_and_key[ 0 ];
-    var key   = id_and_key[ 1 ]; // password decryption key never sent to server
+    var pw_id = id_and_key[ 0 ]; // pw_id used to fetch encrypted password from server
+    var key   = id_and_key[ 1 ]; // password decryption key is never sent to server!
     
-    console.log( "key: " + key );
-    console.log( "token: " + token );
-    console.log( "parsed checksum: " + checksum );
-    console.log( "calculated checksum: " + simple_checksum( token ) );
-
     if ( checksum != simple_checksum( token ) ) { // exclude "#" from checksum calc
       $( "#message" ).text( "Invalid password URL" );
     } else {
       $.getJSON( "/get/" + pw_id, // this GET also deletes the encrypted password from the server
              function( data ) {
-               console.log( data.cipher );
-               
                // decode encrypted password ..
                var decoded_encrypted_bytes = Base58.decode( data.cipher );
-               console.log( "decoded_encrypted_bytes: " + decoded_encrypted_bytes );
-               console.log( "decoded_encrypted_bytes len: " + decoded_encrypted_bytes.length );
                
                // decode key ..
                var decoded_key = Base58.decode( key );
-               console.log( "decoded_key: " + decoded_key );
-               console.log( "decoded_key len: " + decoded_key.length );
                
                // decrypt decoded password with decoded key ..
-               // The counter mode of operation maintains internal state, so to
-               // decrypt a new instance must be instantiated.
                var aesCtr = new aesjs.ModeOfOperation.ctr( decoded_key, new aesjs.Counter( 5 ) );
                var decrypted_bytes = aesCtr.decrypt( decoded_encrypted_bytes );
-               console.log( decrypted_bytes );
-               console.log( "decrypted_bytes len: " + decrypted_bytes.length );
                
                // Convert our bytes back into text
                var decrypted_password = aesjs.util.convertBytesToString( decrypted_bytes );
-               console.log( "decrypted_password: " + decrypted_password );
                
                $( "#message" ).text( "Your password is:" );
                $( "#password" ).text( decrypted_password );
@@ -98,6 +81,7 @@ $(document).ready(function(){
   }
 
 });
+
 </script>
 
 <center>
@@ -105,7 +89,7 @@ $(document).ready(function(){
 <br/>
 <br/>
 
-<h2><span id="message">This password doesn't exist.</span></h2>
+<h2><span id="message">This password doesn't exist</span></h2>
 
 <hr>
 <h1><span id="password" style="font-family: monospace"></span></h1>

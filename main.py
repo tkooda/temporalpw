@@ -100,7 +100,7 @@ def get( pw_id ):
     if password.ip_hash:
         ## only allow viewing from matching IP if myiponly is set..
         ip_salt, ip_hash = password.ip_hash.split( ":", 1 )
-        if not ip_hash == SHA.new( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest():
+        if not ip_hash == hashlib.sha1( ip_salt + os.environ[ "REMOTE_ADDR" ] ).hexdigest():
             return abort( 404 )
     
     cipher = password.ciphertext
