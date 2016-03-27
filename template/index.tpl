@@ -6,6 +6,7 @@
  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/swfobject/swfobject/master/swfobject/swfobject.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/master/index.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/jprichardson/secure-random/master/lib/secure-random.js"></script>
@@ -90,8 +91,11 @@ function got_id( data, status, encoded_key ) {
   $("#settings").html( info + ")<br/>" );
   $("#warning").addClass("hidden");
   
-  $("#button").attr('value', "Copy URL to clipboard" );
-  
+  if ( swfobject.hasFlashPlayerVersion( "1" ) ) {
+    $("#button").attr( "value", "Copy URL to clipboard" );
+  } else {
+    $("#button").addClass("hidden");
+  }
   have_url = true;
   
   return false; // DEBUG

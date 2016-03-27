@@ -36,7 +36,7 @@ I made this because I needed a simple way to send passwords to people with whom 
 <br/>
   <li>Easy to audit: only ~150 lines of python for the backend, and ~200 lines of JavaScript for the fronend.</li><br/>
   <li><a href="http://github.com/tkooda/temporalpw">100% open source</a>.</li><br/>
-  <li>Uses common <a href="http://bottlepy.org/">Bottle</a> framework for the backend; <a href="https://jquery.com/">jQuery</a>, <a href="http://getbootstrap.com/">bootstrap</a>, and <a href="http://zeroclipboard.org/">ZeroClipboard</a> for the frontend; and <a href="https://github.com/ricmoo/aes-js">AES-JS</a>, <a href="https://github.com/45678/Base58">Base58</a>, and <a href="https://github.com/jprichardson/secure-random">secure-random</a> for the in-browser cryptography.</li><br/>
+  <li>Uses common <a href="http://bottlepy.org/">Bottle</a> framework for the backend; <a href="https://jquery.com/">jQuery</a>, <a href="http://getbootstrap.com/">bootstrap</a>, <a href="http://zeroclipboard.org/">ZeroClipboard</a>, and <a href="https://github.com/swfobject/swfobject">swfobject</a> for the frontend; and <a href="https://github.com/ricmoo/aes-js">AES-JS</a>, <a href="https://github.com/45678/Base58">Base58</a>, and <a href="https://github.com/jprichardson/secure-random">secure-random</a> for the in-browser cryptography.</li><br/>
   <li>If you'd like to help keep this service free forever: you can send a few pennies via Bitcoin to: <a href="bitcoin:1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp">1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp</a></li><br/>
 </ul>
 

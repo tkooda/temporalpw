@@ -6,6 +6,7 @@
  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/swfobject/swfobject/master/swfobject/swfobject.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/master/index.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js"></script>
 </head>
@@ -73,7 +74,9 @@ $(document).ready(function(){
                
                $( "#message" ).text( "Your password is:" );
                $( "#password" ).text( decrypted_password );
-               $('#button').removeClass('hidden');
+               if ( swfobject.hasFlashPlayerVersion( "1" ) ) {
+                 $('#button').removeClass('hidden');
+               }
                $('#warning').removeClass('hidden');
                
              } );
@@ -101,11 +104,11 @@ $(document).ready(function(){
 <br/>
 <br/>
 
-<h4><b><span id="warning" class="hidden">WARNING: This is the ONLY time you're able to view this password via this URL.</span></b></h4>
+<h4><b><span id="warning" class="hidden">WARNING: This is the ONLY time this password is visible via this URL.</span></b></h4>
 
 <br/>
 
-<a href="/">Store another password</a> | <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
+<a href="/">Send another password</a> | <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
 
 </div>
 
