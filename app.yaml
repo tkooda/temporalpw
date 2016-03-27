@@ -29,15 +29,3 @@ handlers:
   script: main.bottle
   secure: always
 
-
-# Third party libraries that are included in the App Engine SDK must be listed
-# here if you want to use them.  See
-# https://developers.google.com/appengine/docs/python/tools/libraries27 for
-# a list of libraries included in the SDK.  Third party libs that are *not* part
-# of the App Engine SDK don't need to be listed here, instead add them to your
-# project directory, either as a git submodule or as a plain subdirectory.
-# TODO: List any other App Engine SDK libs you may need here.
-libraries:
-- name: pycrypto
-  version: "2.6"
-

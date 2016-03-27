@@ -80,14 +80,15 @@ function got_id( data, status, encoded_key ) {
   
   var token = data.pw_id + "-" + encoded_key;
 
-  document.myForm.secret.value = "https://temporal.pw/p#" + token + simple_checksum( token );
+  document.myForm.secret.value = "https://Temporal.PW/p#" + token + simple_checksum( token );
   $("#secret").attr( "readonly", true );
   
-  $("#days").addClass("disabled");
-  $("#days").attr( "disabled", true );
-  
-  $("#myiponly").addClass("disabled");
-  $("#myiponly").attr( "disabled", true );
+  var info = "(this URL will expire in " + document.myForm.days.value + " days";
+  if ( document.myForm.myiponly.checked ) {
+    info = info + ", and it is only viewable from this same IP address";
+  }
+  $("#settings").html( info + ")<br/>" );
+  $("#warning").addClass("hidden");
   
   $("#button").attr('value', "Copy URL to clipboard" );
   
@@ -131,7 +132,7 @@ $(document).on('click','input[type=text]',function(){ this.select(); });
 
 <br/>
 <br/>
-<h1>E-Mail passwords securely with <a href="/">Temporal.pw</a>.</h1>
+<h1>E-Mail passwords securely with <a href="/">Temporal.PW</a></h1>
 <br/>
 <br/>
 
@@ -141,7 +142,7 @@ $(document).on('click','input[type=text]',function(){ this.select(); });
 
 <label for="inputlg"><h2><div id="docs">Enter a password to create a temporary secure URL for:</div></h2></label>
 <div class="col-xs-8 col-xs-offset-2 text-center">
-  <input type="text" id="secret" name="secret" placeholder="Enter a password to create a temporary URL for.." class="form-control input-lg text-center">
+  <input type="text" id="secret" name="secret" placeholder="Enter a password" class="form-control input-lg text-center">
 </div>
 
 <br/>
@@ -150,6 +151,7 @@ $(document).on('click','input[type=text]',function(){ this.select(); });
 <br/>
 
 <h4>
+<span id="settings">
 <div>
 Make this URL expire in <select name="days" id="days">
   <option value="1">1</option>
@@ -170,8 +172,10 @@ Make this URL expire in <select name="days" id="days">
 
 <div class="checkbox">
  <label><input type="checkbox" name="myiponly" id="myiponly">Only allow it to be viewed from my current IP address<br/>
- <small>(useful for sending a password to someone in the same network)</small></label>
+ <small>(useful for sending a password to someone in the same office / network)</small></label>
 </div>
+
+</span>
 
 <br/>
 </h4>
@@ -182,10 +186,12 @@ Make this URL expire in <select name="days" id="days">
 </form>
 
 <br/>
+<span id="warning">
 (Do not include any information that identifies what the password is for)<br/>
+</span>
 <br/>
 
-<a href="/">Store another password</a> | <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
+<a href="/">Send another password</a> | <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
 
 </div>
 

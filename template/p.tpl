@@ -101,7 +101,7 @@ $(document).ready(function(){
 <br/>
 <br/>
 
-<h4><b><span id="warning" class="hidden">NOTE: This is the ONLY time you're able to view this password via this URL.</span></b></h4>
+<h4><b><span id="warning" class="hidden">WARNING: This is the ONLY time you're able to view this password via this URL.</span></b></h4>
 
 <br/>
 
