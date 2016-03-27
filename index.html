@@ -50,7 +50,7 @@ function generate_url() {
   // encode encrypted password ..
   var encoded_encrypted_bytes = Base58.encode( encrypted_bytes );
   
-  $.post( "/new", 
+  $.post( "https://temporal.pw/new", 
           { cipher: encoded_encrypted_bytes, // ONLY send encrypted password to server, NEVER send the key!
             days: document.myForm.days.value,
             myiponly: document.myForm.myiponly.checked },
@@ -62,7 +62,7 @@ function generate_url() {
 
 function got_id( data, status, encoded_key ) {
   // setup copying to clipboard ..
-  ZeroClipboard.config( { swfPath: "/static/ZeroClipboard.swf" } );
+  ZeroClipboard.config( { swfPath: "/temporalpw/static/ZeroClipboard.swf" } );
   var clientPass = new ZeroClipboard( $( "#button" ) );
   var $bridge = $( "#global-zeroclipboard-html-bridge" );
   clientPass.on("copy", function(event, data) {
@@ -81,7 +81,7 @@ function got_id( data, status, encoded_key ) {
   
   var token = data.pw_id + "-" + encoded_key;
 
-  document.myForm.secret.value = "https://Temporal.PW/p#" + token + simple_checksum( token );
+  document.myForm.secret.value = "https://tkooda.github.io/temporalpw/p#" + token + simple_checksum( token );
   $("#secret").attr( "readonly", true );
   
   var info = "(this URL will expire in " + document.myForm.days.value + " days";
@@ -136,7 +136,7 @@ $(document).on('click','input[type=text]',function(){ this.select(); });
 
 <br/>
 <br/>
-<h1>E-Mail passwords securely with <a href="/">Temporal.PW</a></h1>
+<h1>E-Mail passwords securely with <a href="/temporalpw">Temporal.PW</a></h1>
 <br/>
 <br/>
 
@@ -195,7 +195,7 @@ Make this URL expire in <select name="days" id="days">
 </span>
 <br/>
 
-<a href="/">Send another password</a> | <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
+<a href="/temporalpw">Send another password</a> | <a href="/temporalpw/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
 
 </div>
 

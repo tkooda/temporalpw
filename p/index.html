@@ -31,7 +31,7 @@ $(document).ready(function(){
 
 
 //  ZeroClipboard.config( { swfPath: "https://ajax.cdnjs.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf" } );
-  ZeroClipboard.config( { swfPath: "/static/ZeroClipboard.swf" } );
+  ZeroClipboard.config( { swfPath: "/temporalpw/static/ZeroClipboard.swf" } );
   var clientPass = new ZeroClipboard($("#button"));
   var $bridge = $("#global-zeroclipboard-html-bridge");
   clientPass.on("copy", function(event, data) {
@@ -57,7 +57,7 @@ $(document).ready(function(){
     if ( checksum != simple_checksum( token ) ) { // exclude "#" from checksum calc
       $( "#message" ).text( "Invalid password URL" );
     } else {
-      $.getJSON( "/get/" + pw_id, // this GET also deletes the encrypted password from the server
+      $.getJSON( "https://temporal.pw/get/" + pw_id, // this GET also deletes the encrypted password from the server
              function( data ) {
                // decode encrypted password ..
                var decoded_encrypted_bytes = Base58.decode( data.cipher );
@@ -108,7 +108,7 @@ $(document).ready(function(){
 
 <br/>
 
-<a href="/">Send another password</a> | <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
+<a href="/temporalpw">Send another password</a> | <a href="/temporalpw/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
 
 </div>
 
