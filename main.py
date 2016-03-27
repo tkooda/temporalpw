@@ -61,7 +61,7 @@ def new():
     days = int( request.POST.get( "days" ).strip() )
     myiponly = request.POST.get( "myiponly" )
     
-    if len( cipher ) < 1 or len( cipher ) > 1024 \
+    if len( cipher ) < 1 or len( cipher ) > 1450 \
        or days < 1 or days > 30:
         abort( 400, "invalid options" )
     
