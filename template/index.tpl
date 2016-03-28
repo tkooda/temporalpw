@@ -69,7 +69,7 @@ function got_id( data, status, encoded_key ) {
       clipboard.setData( "text/plain", copiedValue );
   });
   clientPass.on("aftercopy", function() {
-    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied password!").tooltip("fixTitle").tooltip("show");
+    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied URL!").tooltip("fixTitle").tooltip("show");
   });
   $('.mytooltip').mouseleave( function() {
     $bridge.tooltip("disable");
