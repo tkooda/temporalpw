@@ -38,10 +38,8 @@ function generate_url() {
   // encode key byte array ..
   var encoded_key = Base58.encode( key );
   
-  // convert password string to byte array ..
-  var password = document.myForm.secret.value;
-  
-  var password_bytes = aesjs.util.convertStringToBytes( password );
+  // convert password string to byte array, never send this to the server unencrypted ..
+  var password_bytes = aesjs.util.convertStringToBytes( document.myForm.secret.value );
   
   // encrypt password ..
   var aesCtr = new aesjs.ModeOfOperation.ctr( key, new aesjs.Counter( 5 ) );
@@ -51,10 +49,10 @@ function generate_url() {
   var encoded_encrypted_bytes = Base58.encode( encrypted_bytes );
   
   $.post( "/new", 
-          { cipher: encoded_encrypted_bytes, // ONLY send encrypted password to server, NEVER send the key!
+          { cipher: encoded_encrypted_bytes, // ONLY send encrypted password to server, NEVER send the key or unencrypted password!
             days: document.myForm.days.value,
             myiponly: document.myForm.myiponly.checked },
-          function( data, status ) { got_id( data, status, encoded_key ) } ); // encryption key is never sent to server, only to ajax success callback for building URL in browser
+          function( data, status ) { got_id( data, status, encoded_key ) } ); // encryption key is never sent to server, it's only provided to this ajax success callback so the browser can build the secret URL
   
   return false;
 };
@@ -98,7 +96,7 @@ function got_id( data, status, encoded_key ) {
   }
   have_url = true;
   
-  return false; // DEBUG
+  return false;
 };
 
 
