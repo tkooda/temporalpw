@@ -38,6 +38,8 @@ I made this because I needed a simple way to send passwords to people with whom 
   <li><a href="http://github.com/tkooda/temporalpw">100% open source</a>.</li><br/>
   <li>Uses common <a href="http://bottlepy.org/">Bottle</a> framework for the backend; <a href="https://jquery.com/">jQuery</a>, <a href="http://getbootstrap.com/">bootstrap</a>, <a href="http://zeroclipboard.org/">ZeroClipboard</a>, and <a href="https://github.com/swfobject/swfobject">swfobject</a> for the frontend; and <a href="https://github.com/ricmoo/aes-js">AES-JS</a>, <a href="https://github.com/45678/Base58">Base58</a>, and <a href="https://github.com/jprichardson/secure-random">secure-random</a> for the in-browser cryptography.</li><br/>
   <li>If you'd like to help keep this service free forever: you can send a few pennies via Bitcoin to: <a href="bitcoin:1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp">1MLaaKmMbioyCKZShbyKGJztUP8M7BHRYp</a></li><br/>
+<br/>
+  <li>If you're paranoid, and don't trust that I won't change the JavaScript to send your password or encryption key somewhere (and you don't want to just view the source of the page) : you can use this copy of the JavaScript hosted on github.io: <a href="https://tkooda.github.io/temporalpw/">https://tkooda.github.io/temporalpw/</a> instead, where (you can track any changes to the Javascript you're running at <a href="https://github.com/tkooda/temporalpw/commits/gh-pages">https://github.com/tkooda/temporalpw/commits/gh-pages</a>).</li><br/>
 </ul>
 
 </h4>
