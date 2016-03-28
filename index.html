@@ -19,6 +19,9 @@
 </style>
 
 <script language="javascript">
+if (window.location.protocol != "https:")
+    window.location.href = "https:" + window.location.href.substring(window.location.protocol.length); // github.io redirects to http
+
   var have_url = false;
 
   function simple_checksum(s) { // based on Schnaader's
