@@ -29,8 +29,6 @@ $(document).ready(function(){
     return (chk & 0xff).toString(16); // 2-char is sufficient
   };
 
-
-//  ZeroClipboard.config( { swfPath: "https://ajax.cdnjs.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf" } );
   ZeroClipboard.config( { swfPath: "/temporalpw/static/ZeroClipboard.swf" } );
   var clientPass = new ZeroClipboard($("#button"));
   var $bridge = $("#global-zeroclipboard-html-bridge");
