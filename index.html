@@ -81,7 +81,7 @@ function got_id( data, status, encoded_key ) {
   
   var token = data.pw_id + "-" + encoded_key;
 
-  document.myForm.secret.value = "https://tkooda.github.io/temporalpw/p#" + token + simple_checksum( token );
+  document.myForm.secret.value = "https://tkooda.github.io/temporalpw/p/#" + token + simple_checksum( token );
   $("#secret").attr( "readonly", true );
   
   var info = "(this URL will expire in " + document.myForm.days.value + " days";
