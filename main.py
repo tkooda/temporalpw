@@ -4,7 +4,7 @@
 
 ## 2016-03-26 : rewrote. move password encryption to client side, server is never sent any part of the key (browser does all encryption/decryption)
 
-"""Provide temporary URLs for viewing encrypted passwords."""
+"""Provide temporary storage for encrypted passwords so they can be sent via E-Mail."""
 
 from bottle import Bottle, request, template, abort, response
 from google.appengine.ext import ndb, webapp
@@ -83,12 +83,11 @@ def new():
     
     password.put()
     
-    response.add_header( "Access-Control-Allow-Origin", "https://tkooda.github.io" )
+    response.add_header( "Access-Control-Allow-Origin", "https://tkooda.github.io" ) # for auditable version
     
     return { "pw_id": pw_id }
 
 
-## tkooda : 2016-03-26 : unused..
 @bottle.get( "/get/<pw_id>" )
 def get( pw_id ):
     password = Password.get_by_id( pw_id )
@@ -110,7 +109,7 @@ def get( pw_id ):
     
     password.key.delete() # only return encrypted password for a SINGLE viewing
     
-    response.add_header( "Access-Control-Allow-Origin", "https://tkooda.github.io" )
+    response.add_header( "Access-Control-Allow-Origin", "https://tkooda.github.io" ) # for auditable version
     
     return { "cipher": cipher }
 
