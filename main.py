@@ -6,7 +6,7 @@
 
 """Provide temporary URLs for viewing encrypted passwords."""
 
-from bottle import Bottle, request, template, abort
+from bottle import Bottle, request, template, abort, response
 from google.appengine.ext import ndb, webapp
 import datetime
 import string
@@ -83,6 +83,8 @@ def new():
     
     password.put()
     
+    response.add_header( "Access-Control-Allow-Origin", "https://tkooda.github.io" )
+    
     return { "pw_id": pw_id }
 
 
@@ -107,6 +109,8 @@ def get( pw_id ):
     cipher = password.ciphertext
     
     password.key.delete() # only return encrypted password for a SINGLE viewing
+    
+    response.add_header( "Access-Control-Allow-Origin", "https://tkooda.github.io" )
     
     return { "cipher": cipher }
 
