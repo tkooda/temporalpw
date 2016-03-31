@@ -10,6 +10,7 @@
  <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/master/index.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/jprichardson/secure-random/master/lib/secure-random.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.5/hashes.min.js"></script>
 </head>
 <body>
 
@@ -19,20 +20,10 @@
 </style>
 
 <script language="javascript">
+var have_url = false;
+
 if (window.location.protocol != "https:")
-    window.location.href = "https:" + window.location.href.substring(window.location.protocol.length); // github.io redirects to http
-
-  var have_url = false;
-
-  function simple_checksum(s) { // based on Schnaader's
-    var i;
-    var chk = 0x12345678;
-    for (i = 0; i < s.length; i++) {
-      chk += (s.charCodeAt(i) * (i + 1));
-    }
-    return (chk & 0xff).toString(16); // 2-char is sufficient
-  };
-
+    window.location.href = "https:" + window.location.href.substring(window.location.protocol.length); // github.io redirects directories w/out trailing slash to http
 
 function generate_url() {
   // generate random key byte array ..
@@ -62,6 +53,8 @@ function generate_url() {
 
 
 function got_id( data, status, encoded_key ) {
+  var SHA256 = new Hashes.SHA256;
+  
   // setup copying to clipboard ..
   ZeroClipboard.config( { swfPath: "/temporalpw/static/ZeroClipboard.swf" } );
   var clientPass = new ZeroClipboard( $( "#button" ) );
@@ -72,7 +65,7 @@ function got_id( data, status, encoded_key ) {
       clipboard.setData( "text/plain", copiedValue );
   });
   clientPass.on("aftercopy", function() {
-    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied password!").tooltip("fixTitle").tooltip("show");
+    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied URL!").tooltip("fixTitle").tooltip("show");
   });
   $('.mytooltip').mouseleave( function() {
     $bridge.tooltip("disable");
@@ -81,8 +74,8 @@ function got_id( data, status, encoded_key ) {
   $("#docs").text( "This URL can be used ONCE to view the password:" );
   
   var token = data.pw_id + "-" + encoded_key;
-
-  document.myForm.secret.value = "https://tkooda.github.io/temporalpw/p/#" + token + simple_checksum( token );
+  
+  document.myForm.secret.value = "https://tkooda.github.io/temporalpw/p/#" + token + SHA256.hex( token ).substr( 0, 2 );
   $("#secret").attr( "readonly", true );
   
   var info = "(this URL will expire in " + document.myForm.days.value + " days";
@@ -105,7 +98,7 @@ function got_id( data, status, encoded_key ) {
 
 $(document).ready(function(){
   $("#button").prop( "disabled", true );
-
+  
   $("#secret").on( "input", function() {
     if($(this).val().length)
         $("#button").prop( "disabled", false );
