@@ -5,10 +5,10 @@
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
- <script type="text/javascript" src="https://cdn.rawgit.com/swfobject/swfobject/master/swfobject/swfobject.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/master/index.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.5/hashes.min.js"></script>
 </head>
 <body>
 
@@ -19,40 +19,35 @@
 
 <script>
 $(document).ready(function(){
-
+  var clipboard = new Clipboard( "#clip-btn" );
+  clipboard.on('success', function(e) {
+    $( "#clip-btn" ).tooltip( "enable" ).attr( "title", "Password copied to clipboard" ).tooltip( "fixTitle" ).tooltip( "show" );
+  });
+  $( "#clip-btn" ).mouseleave( function() {
+    $( "#clip-btn" ).tooltip( "disable" );
+  });
+  
   function simple_checksum(s) { // based on Schnaader's
     var i;
     var chk = 0x12345678;
     for (i = 0; i < s.length; i++) {
       chk += (s.charCodeAt(i) * (i + 1));
     }
-    return (chk & 0xff).toString(16); // 2-char is sufficient
+    return (chk & 0xff).toString(16); // 2-char is sufficient  -- Depreciated, doesn't null-pad on 0-f, migrate to sha256 instead
   };
-
-  ZeroClipboard.config( { swfPath: "/static/ZeroClipboard.swf" } );
-  var clientPass = new ZeroClipboard($("#button"));
-  var $bridge = $("#global-zeroclipboard-html-bridge");
-  clientPass.on("copy", function(event, data) {
-      var copiedValue = $( "#password" ).text();
-      var clipboard = event.clipboardData;
-      clipboard.setData("text/plain", copiedValue);
-  });
-  clientPass.on("aftercopy", function() {
-    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied password!").tooltip("fixTitle").tooltip("show");
-  });
-  $('.mytooltip').mouseleave( function() {
-    $bridge.tooltip("disable");
-  });
   
   // attempt to fetch password based on URL fragment (only the password ID is sent to the server, NOT the decryption key)
   if ( window.location.hash ) {
+    var SHA256 = new Hashes.SHA256;
+    
     var token = window.location.hash.substring( 1 ).slice( 0, -2 ); // strip "#" from URL fragment
     var checksum = window.location.hash.substring( 1 ).slice( -2 ); // checksum used for better error message
     var id_and_key = token.split( "-", 2 );
+    
     var pw_id = id_and_key[ 0 ]; // pw_id used to fetch encrypted password from server
     var key   = id_and_key[ 1 ]; // password decryption key is never sent to server!
     
-    if ( checksum != simple_checksum( token ) ) { // exclude "#" from checksum calc
+    if ( checksum != simple_checksum( token ) && checksum != SHA256.hex( token ).substr( 0, 2 ) ) { // checksum only used to provide alternate error (and postpone deleting the encrypted password from server) in the case of accidental URL mangling (e.g. the user is going to get a malformed password by decrypting with a mangled key)
       $( "#message" ).text( "Invalid password URL" );
     } else {
       $.getJSON( "/get/" + pw_id, // this GET also deletes the encrypted password from the server
@@ -72,15 +67,13 @@ $(document).ready(function(){
                
                $( "#message" ).text( "Your password is:" );
                $( "#password" ).text( decrypted_password );
-               if ( swfobject.hasFlashPlayerVersion( "1" ) ) {
-                 $('#button').removeClass('hidden');
-               }
-               $('#warning').removeClass('hidden');
+               $( "#clip-btn" ).removeClass( "hidden" );
+               $( "#warning" ).removeClass( "hidden" );
                
              } );
     } // checksum check
   }
-
+  
 });
 
 </script>
@@ -96,7 +89,7 @@ $(document).ready(function(){
 <h1><span id="password" style="font-family: monospace"></span></h1>
 <hr>
 <span class="input-group-btn">
-  <button id="button" class="btn btn-primary mytooltip hidden" data-placement="right">Copy password to clipboard</button>
+  <button type="button" id="clip-btn" class="btn btn-success mytooltip hidden" data-clipboard-target="#password" data-placement="right">Copy password to clipboard</button>
 </span>
 
 <br/>
