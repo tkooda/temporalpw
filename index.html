@@ -5,12 +5,12 @@
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.min.js"></script>
- <script type="text/javascript" src="https://cdn.rawgit.com/swfobject/swfobject/master/swfobject/swfobject.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/master/index.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/jprichardson/secure-random/master/lib/secure-random.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.5/hashes.min.js"></script>
+ <script type="text/javascript" src="/static/random-password.js"></script>
 </head>
 <body>
 
@@ -20,12 +20,17 @@
 </style>
 
 <script language="javascript">
-var have_url = false;
-
 if (window.location.protocol != "https:")
-    window.location.href = "https:" + window.location.href.substring(window.location.protocol.length); // github.io redirects directories w/out trailing slash to http
+    window.location.href = "https:" + window.location.href.substring(window.location.protocol.length); // gix github.io redirecting directories w/out trailing slash to http
+
+var has_url = false;
 
 function generate_url() {
+  var secret = document.getElementById( "secret" ).value;
+  if ( secret == null || secret == "" ) {
+    return false;
+  }
+  
   // generate random key byte array ..
   var key = secureRandom.randomUint8Array( 16 );  // random 128 bit AES key
   
@@ -33,7 +38,7 @@ function generate_url() {
   var encoded_key = Base58.encode( key );
   
   // convert password string to byte array, never send this to the server unencrypted ..
-  var password_bytes = aesjs.util.convertStringToBytes( document.myForm.secret.value );
+  var password_bytes = aesjs.util.convertStringToBytes( secret );
   
   // encrypt password ..
   var aesCtr = new aesjs.ModeOfOperation.ctr( key, new aesjs.Counter( 5 ) );
@@ -42,10 +47,10 @@ function generate_url() {
   // encode encrypted password ..
   var encoded_encrypted_bytes = Base58.encode( encrypted_bytes );
   
-  $.post( "https://temporal.pw/new", 
+  $.post( "https://temporal.pw/new",
           { cipher: encoded_encrypted_bytes, // ONLY send encrypted password to server, NEVER send the key or unencrypted password!
-            days: document.myForm.days.value,
-            myiponly: document.myForm.myiponly.checked },
+            days: document.getElementById( "days" ).value,
+            myiponly: document.getElementById( "myiponly" ).checked },
           function( data, status ) { got_id( data, status, encoded_key ) } ); // encryption key is never sent to server, it's only provided to this ajax success callback so the browser can build the secret URL
   
   return false;
@@ -55,68 +60,49 @@ function generate_url() {
 function got_id( data, status, encoded_key ) {
   var SHA256 = new Hashes.SHA256;
   
-  // setup copying to clipboard ..
-  ZeroClipboard.config( { swfPath: "/temporalpw/static/ZeroClipboard.swf" } );
-  var clientPass = new ZeroClipboard( $( "#button" ) );
-  var $bridge = $( "#global-zeroclipboard-html-bridge" );
-  clientPass.on("copy", function(event, data) {
-      var copiedValue = document.myForm.secret.value;
-      var clipboard = event.clipboardData;
-      clipboard.setData( "text/plain", copiedValue );
-  });
-  clientPass.on("aftercopy", function() {
-    $bridge.data("placement", "right").tooltip("enable").attr("title", "Copied URL!").tooltip("fixTitle").tooltip("show");
-  });
-  $('.mytooltip').mouseleave( function() {
-    $bridge.tooltip("disable");
-  });
-  
   $("#docs").text( "This URL can be used ONCE to view the password:" );
   
   var token = data.pw_id + "-" + encoded_key;
   
-  document.myForm.secret.value = "https://tkooda.github.io/temporalpw/p/#" + token + SHA256.hex( token ).substr( 0, 2 );
+  document.getElementById( "secret" ).value = "https://Temporal.PW/p#" + token + SHA256.hex( token ).substr( 0, 2 );
   $("#secret").attr( "readonly", true );
   
-  var info = "(this URL will expire in " + document.myForm.days.value + " days";
-  if ( document.myForm.myiponly.checked ) {
+  var info = "(this URL will expire in " + document.getElementById( "days" ).value + " days";
+  if ( document.getElementById( "myiponly" ).checked ) {
     info = info + ", and it is only viewable from this same IP address";
   }
   $("#settings").html( info + ")<br/>" );
   $("#warning").addClass("hidden");
+  $("#genPassword").addClass("hidden");
+  $("#getUrlButton").addClass("hidden");
   
-  if ( swfobject.hasFlashPlayerVersion( "1" ) ) {
-    $("#button").attr( "value", "Copy URL to clipboard" );
-  } else {
-    $("#button").addClass("hidden");
-  }
-  have_url = true;
+  has_url = true;
   
   return false;
 };
 
 
 $(document).ready(function(){
-  $("#button").prop( "disabled", true );
-  
-  $("#secret").on( "input", function() {
-    if($(this).val().length)
-        $("#button").prop( "disabled", false );
-    else
-        $("#button").prop( "disabled", true );
+  // popup temporary tooltip when clicking copy button ..
+  var clipboard = new Clipboard( "#clip-btn" );
+  clipboard.on( "success", function(e) {
+    if ( has_url ) {
+      $( "#clip-btn" ).tooltip( "enable" ).attr( "title", "URL copied to clipboard" ).tooltip( "fixTitle" ).tooltip( "show" );
+    } else {
+      $( "#clip-btn" ).tooltip( "enable" ).attr( "title", "Password copied to clipboard" ).tooltip( "fixTitle" ).tooltip( "show" );
+    }
+  });
+  $( "#clip-btn" ).mouseleave( function() {
+    $( "#clip-btn" ).tooltip( "disable" );
   });
   
-  $("#button").click(function(){
-    var secret = document.forms[ "myForm" ][ "secret" ].value;
-    if ( secret == null || secret == "" ) {
-      return false;
-    }
-    
-    if ( ! have_url ) {
-      generate_url();
-    }
-    
-    return false; // don't actually submit
+  // make get URL button clickable upon input ..
+  $("#getUrlButton").prop( "disabled", true );
+  $("#secret").on( "input", function() {
+    if ( $( this ).val().length )
+        $("#getUrlButton").prop( "disabled", false );
+    else
+        $("#getUrlButton").prop( "disabled", true );
   });
   
 });
@@ -133,15 +119,23 @@ $(document).on('click','input[type=text]',function(){ this.select(); });
 <br/>
 <br/>
 
-<!-- <form role="form" id="myForm" name="myForm" onsubmit="return buttonClick();"> -->
-<form role="form" id="myForm" name="myForm" action="">
 <div class="form-group">
+<form role="form" id="myForm" name="myForm" action="">
 
 <label for="inputlg"><h2><div id="docs">Enter a password to create a temporary secure URL for:</div></h2></label>
 <div class="col-xs-8 col-xs-offset-2 text-center">
-  <input type="text" id="secret" name="secret" placeholder="Enter a password" class="form-control input-lg text-center">
+  <div class="input-group">
+    <input type="text" id="secret" name="secret" placeholder="Enter a password" class="form-control input-lg text-center">
+    <span class="input-group-addon">
+      <button type="button" id="clip-btn" data-clipboard-target="#secret">
+        <img src="static/clippy.svg" width="20" alt="Copy to clipboard">
+      </button>
+    </span>
+  </div>
+  <div id="genPassword">or: <button type="button" id="generate" class="btn btn-primary btn-xs" onclick="document.getElementById('secret').value = generatePassword(); $('#getUrlButton').prop( 'disabled', false );">Generate a random password</button> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</div>
 </div>
 
+<br/>
 <br/>
 <br/>
 <br/>
@@ -177,10 +171,10 @@ Make this URL expire in <select name="days" id="days">
 <br/>
 </h4>
 
-<input type="submit" id="button" class="btn btn-primary btn-lg mytooltip" value="Get temporary URL for this password">
+<input type="submit" id="getUrlButton" class="btn btn-success btn-lg" value="Get temporary URL for this password" onclick="return generate_url();">
+</form>
 
 </div>
-</form>
 
 <br/>
 <span id="warning">
@@ -188,7 +182,7 @@ Make this URL expire in <select name="days" id="days">
 </span>
 <br/>
 
-<a href="https://tkooda.github.io/temporalpw/">Send another password</a> | <a href="https://tkooda.github.io/temporalpw/about/">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
+<a href="https://tkooda.github.io/temporalpw/">Send another password</a> | <a href="/about">About</a> | <a href="https://github.com/tkooda/temporalpw">Source</a></br>
 
 </div>
 
