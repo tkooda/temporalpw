@@ -89,7 +89,9 @@ $(document).ready(function(){
     if ( has_url ) {
       $( "#clip-btn" ).tooltip( "enable" ).attr( "title", "URL copied to clipboard" ).tooltip( "fixTitle" ).tooltip( "show" );
     } else {
-      $( "#clip-btn" ).tooltip( "enable" ).attr( "title", "Password copied to clipboard" ).tooltip( "fixTitle" ).tooltip( "show" );
+      if ( document.getElementById( "secret" ).value != null && document.getElementById( "secret" ).value != "" ) {
+        $( "#clip-btn" ).tooltip( "enable" ).attr( "title", "Password copied to clipboard" ).tooltip( "fixTitle" ).tooltip( "show" );
+      }
     }
   });
   $( "#clip-btn" ).mouseleave( function() {
