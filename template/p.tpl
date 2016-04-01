@@ -50,7 +50,7 @@ $(document).ready(function(){
     if ( checksum != simple_checksum( token ) && checksum != SHA256.hex( token ).substr( 0, 2 ) ) { // checksum only used to provide alternate error (and postpone deleting the encrypted password from server) in the case of accidental URL mangling (e.g. the user is going to get a malformed password by decrypting with a mangled key)
       $( "#message" ).text( "Invalid password URL" );
     } else {
-      $.getJSON( "/get/" + pw_id, // this GET also deletes the encrypted password from the server
+      $.getJSON( "https://temporal.pw/get/" + pw_id, // this GET also deletes the encrypted password from the server
              function( data ) {
                // decode encrypted password ..
                var decoded_encrypted_bytes = Base58.decode( data.cipher );
