@@ -15,8 +15,8 @@ function getRandomByte( max = 256 ) {
 
 function generatePassword( minLength = 20, maxLength = 30, charset = "abcdefghijknopqrstuvwxyzACDEFGHJKLMNPQRSTUVWXYZ2345679" ) {
     if ( minLength > maxLength) maxLength = minLength;
-    var randomLength = Math.floor( Math.random() * ( maxLength - minLength ) ) + minLength,
-        password = "";
+    var randomLength = Math.floor( Math.random() * ( maxLength - minLength ) ) + minLength;
+    var password = "";
     for ( var i = 0, maxIndex = charset.length; i < randomLength; i++ ) {
         password += charset.charAt( getRandomByte( maxIndex ) );
     }

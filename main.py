@@ -46,7 +46,7 @@ def index():
 
 
 @bottle.get( "/p" )
-def index():
+def p():
     return template( "template/p" )
 
 
