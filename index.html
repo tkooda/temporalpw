@@ -8,9 +8,9 @@
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/master/index.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js"></script>
- <script type="text/javascript" src="https://cdn.rawgit.com/jprichardson/secure-random/master/lib/secure-random.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.5/hashes.min.js"></script>
  <script type="text/javascript" src="/temporalpw/static/random-password.js"></script>
+ <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
 </head>
 <body>
 
@@ -21,7 +21,7 @@
 
 <script language="javascript">
 if (window.location.protocol != "https:")
-    window.location.href = "https:" + window.location.href.substring(window.location.protocol.length); // gix github.io redirecting directories w/out trailing slash to http
+    window.location.href = "https:" + window.location.href.substring(window.location.protocol.length); // fix github.io redirecting directories w/out trailing slash to http
 
 var has_url = false;
 
@@ -32,7 +32,10 @@ function generate_url() {
   }
   
   // generate random key byte array ..
-  var key = secureRandom.randomUint8Array( 16 );  // random 128 bit AES key
+  var crypto = window.crypto || window.msCrypto;
+  if ( ! crypto ) throw new Error( "Your browser does not support window.crypto or window.msCrypto." );
+  var key = new Uint8Array( 16 );
+  crypto.getRandomValues( key );  // generate random 128 bit AES key
   
   // encode key byte array ..
   var encoded_key = Base58.encode( key );
