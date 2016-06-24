@@ -27,15 +27,6 @@ $(document).ready(function(){
     $( "#clip-btn" ).tooltip( "disable" );
   });
   
-  function simple_checksum(s) { // based on Schnaader's
-    var i;
-    var chk = 0x12345678;
-    for (i = 0; i < s.length; i++) {
-      chk += (s.charCodeAt(i) * (i + 1));
-    }
-    return (chk & 0xff).toString(16); // 2-char is sufficient  -- Depreciated, doesn't null-pad on 0-f, migrate to sha256 instead
-  };
-  
   // attempt to fetch password based on URL fragment (only the password ID is sent to the server, NOT the decryption key)
   if ( window.location.hash ) {
     var SHA256 = new Hashes.SHA256;
@@ -47,7 +38,7 @@ $(document).ready(function(){
     var pw_id = id_and_key[ 0 ]; // pw_id used to fetch encrypted password from server
     var key   = id_and_key[ 1 ]; // password decryption key is never sent to server!
     
-    if ( checksum != simple_checksum( token ) && checksum != SHA256.hex( token ).substr( 0, 2 ) ) { // checksum only used to provide alternate error (and postpone deleting the encrypted password from server) in the case of accidental URL mangling (e.g. the user is going to get a malformed password by decrypting with a mangled key)
+    if ( checksum != SHA256.hex( token ).substr( 0, 2 ) ) { // checksum only used to provide alternate error (and postpone deleting the encrypted password from server) in the case of accidental URL mangling (e.g. the user is going to get a malformed password by decrypting with a mangled key)
       $( "#message" ).text( "Invalid password URL" );
     } else {
       $.getJSON( "https://temporal.pw/get/" + pw_id, // this GET also deletes the encrypted password from the server
