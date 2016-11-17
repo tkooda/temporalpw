@@ -130,7 +130,7 @@ $(document).on('click','input[type=text]',function(){ this.select(); });
 <label for="inputlg"><h2><div id="docs">Enter a password to create a temporary secure URL for:</div></h2></label>
 <div class="col-xs-8 col-xs-offset-2 text-center">
   <div class="input-group">
-    <input type="text" id="secret" name="secret" placeholder="Enter a password" class=".form-control input-lg text-center">
+    <input type="text" id="secret" name="secret" placeholder="Enter a password" class="form-control input-lg text-center">
     <span class="input-group-addon">
       <button type="button" id="clip-btn" data-clipboard-target="#secret">
         <img src="static/clippy.svg" width="20" alt="Copy to clipboard">
