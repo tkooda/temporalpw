@@ -9,7 +9,7 @@
  <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/v2.0.0/index.js" crossorigin="anonymous" integrity="sha384-PXzFVs1Uwmv9IgXZtHWck4jUzla5FSGAFTRAuiXE3i2yjh7QbVhl6R52oYVRLmTE"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js" crossorigin="anonymous"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.5/hashes.min.js" crossorigin="anonymous" integrity="sha384-tARwkAjXmhKdUTDed6+4lbwtffWZDOIw7AiDtqp/Zubhc9EK/JvPrX9g27RolaxX"></script>
- <script type="text/javascript" src="/static/random-password.js" crossorigin="anonymous" integrity="sha384-/7FPV70hkdAoFrKjuFUVI42WgJQEkmSV/0VRJyXRWF2qBlUSmp9mE4V6nMNJLZBt"></script>
+ <script type="text/javascript" src="https://cdn.rawgit.com/tkooda/temporalpw/master/static/random-password.js" crossorigin="anonymous" integrity="sha384-/7FPV70hkdAoFrKjuFUVI42WgJQEkmSV/0VRJyXRWF2qBlUSmp9mE4V6nMNJLZBt"></script>
  <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
 </head>
 <body>
