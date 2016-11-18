@@ -6,7 +6,7 @@
 
 """Provide temporary storage for encrypted passwords so they can be sent via E-Mail."""
 
-from bottle import Bottle, request, template, abort, response
+from bottle import Bottle, request, template, abort, response, redirect
 from google.appengine.ext import ndb, webapp
 import datetime
 import string
@@ -50,6 +50,11 @@ def p():
     return template( "template/p" )
 
 
+@bottle.get( "/p<redir>" )
+def p_redir( redir ):
+    redirect( "/p" + redir ) # redirect to catch any user mangling of URL ("/p%23...")
+
+
 @bottle.get( "/about" )
 def about():
     return template( "template/about" )
@@ -83,7 +88,7 @@ def new():
     
     password.put()
     
-    response.add_header( "Access-Control-Allow-Origin", "https://tkooda.github.io" ) # for auditable version
+    response.add_header( "Access-Control-Allow-Origin", "*" ) # for auditable version + development
     
     return { "pw_id": pw_id }
 
