@@ -3,6 +3,7 @@
  <title>Temporal.PW - Temporary secure storage for passwords</title>
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+ <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
 </head>
 <body>
 

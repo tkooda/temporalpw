@@ -9,6 +9,7 @@
  <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/master/index.js"></script>
  <script type="text/javascript" src="https://cdn.rawgit.com/45678/base58/master/Base58.js"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.5/hashes.min.js"></script>
+ <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
 </head>
 <body>
 
@@ -77,7 +78,7 @@ $(document).ready(function(){
 <h2><span id="message">This password doesn't exist</span></h2>
 
 <hr>
-<h1><span id="password" style="font-family: monospace"></span></h1>
+<h1><span id="password" style="font-family: monospace; white-space: pre-wrap"></span></h1>
 <hr>
 <span class="input-group-btn">
   <button type="button" id="clip-btn" class="btn btn-success mytooltip hidden" data-clipboard-target="#password" data-placement="right">Copy password to clipboard</button>
