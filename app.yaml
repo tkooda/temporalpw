@@ -1,7 +1,10 @@
 ## https://developers.google.com/appengine/docs/python/config/appconfig
 
-application: temporalpw-1
-version: 1
+# gcloud app logs read --project temporalpw-1 --logs=stderr,stdout,crash.log,request_log
+
+## 2016-11-17 : tkooda : removed per move from `appcfg.py -A temporalpw-1 --oauth2 update .` to `gcloud app deploy --project temporalpw-1 *.yaml`
+#application: temporalpw-1
+#version: 1
 runtime: python27
 api_version: 1
 threadsafe: yes
