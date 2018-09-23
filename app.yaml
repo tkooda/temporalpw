@@ -9,6 +9,10 @@ runtime: python27
 api_version: 1
 threadsafe: yes
 
+libraries:
+- name: pycrypto
+  version: 2.6
+
 handlers:
 - url: /cleanup
   script: main.bottle
