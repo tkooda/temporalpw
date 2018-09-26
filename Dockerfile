@@ -13,4 +13,3 @@ RUN rm /app/Dockerfile
 EXPOSE 8080
 EXPOSE 8000
 ENTRYPOINT ["/usr/bin/dev_appserver.py","--host=0.0.0.0","--admin_host=0.0.0.0","app.yaml"]
-CMD ["--log-level", "debug"]
