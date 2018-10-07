@@ -13,7 +13,10 @@ function getRandomByte( max = 256 ) {
     }
 };
 
-function generatePassword( minLength = 20, maxLength = 30, charset = "abcdefghijknopqrstuvwxyzACDEFGHJKLMNPQRSTUVWXYZ2345679" ) {
+function generatePassword() {
+    var minLength = 16;
+    var maxLength = 16;
+    var charset = "abcdefghijknopqrstuvwxyzACDEFGHJKLMNPQRSTUVWXYZ0123456789!@#$%^&*"
     if ( minLength > maxLength) maxLength = minLength;
     var randomLength = Math.floor( Math.random() * ( maxLength - minLength ) ) + minLength;
     var password = "";
